@@ -5,20 +5,21 @@ import { connect } from 'dva';
 import {
   List,
   Card,
-  Row,
-  Col,
-  Radio,
+  // Row,
+  // Col,
+  // Radio,
   Input,
   Progress,
   Button,
   Icon,
   Dropdown,
   Menu,
-  Avatar,
+  // Avatar,
   Modal,
   Form,
   DatePicker,
   Select,
+  TextArea,
 } from 'antd';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -27,13 +28,13 @@ import Result from '@/components/Result';
 import styles from './FyglMain.less';
 
 const FormItem = Form.Item;
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
+// const RadioButton = Radio.Button;
+// const RadioGroup = Radio.Group;
 const SelectOption = Select.Option;
-const { Search, TextArea } = Input;
+// const { Search, TextArea } = Input;
 
 @connect(({ fygl, loading }) => ({
-  list:fygl,
+  list: fygl,
   loading: loading.models.fygl,
 }))
 @Form.create()
@@ -138,24 +139,24 @@ class BasicList extends PureComponent {
       ? { footer: null, onCancel: this.handleDone }
       : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
 
-    const Info = ({ title, value, bordered }) => (
-      <div className={styles.headerInfo}>
-        <span>{title}</span>
-        <p>{value}</p>
-        {bordered && <em />}
-      </div>
-    );
+    // const Info = ({ title, value, bordered }) => (
+    //   <div className={styles.headerInfo}>
+    //     <span>{title}</span>
+    //     <p>{value}</p>
+    //     {bordered && <em />}
+    //   </div>
+    // );
 
-    const extraContent = (
-      <div className={styles.extraContent}>
-        <RadioGroup defaultValue="all">
-          <RadioButton value="all">全部</RadioButton>
-          <RadioButton value="progress">进行中</RadioButton>
-          <RadioButton value="waiting">等待中</RadioButton>
-        </RadioGroup>
-        <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
-      </div>
-    );
+    // const extraContent = (
+    //   <div className={styles.extraContent}>
+    //     <RadioGroup defaultValue="all">
+    //       <RadioButton value="all">全部</RadioButton>
+    //       <RadioButton value="progress">进行中</RadioButton>
+    //       <RadioButton value="waiting">等待中</RadioButton>
+    //     </RadioGroup>
+    //     <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
+    //   </div>
+    // );
 
     const paginationProps = {
       showSizeChanger: true,
@@ -312,9 +313,9 @@ class BasicList extends PureComponent {
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={<Avatar src={item.logo} shape="square" size="large" />}
-                    title={<a href={item.href}>{item.title}</a>}
-                    description={item.subDescription}
+                    // avatar={<Avatar src={item.logo} shape="square" size="large" />}
+                    title={<a href={item.href}>{item.fwmc}</a>}
+                    description={item.zhxm}
                   />
                   <ListContent data={item} />
                 </List.Item>
