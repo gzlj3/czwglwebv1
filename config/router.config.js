@@ -20,6 +20,11 @@ export default [
       // dashboard
       { path: '/', redirect: '/dashboard/analysis' },
       {
+        path: '/fyglmain',
+        name: 'fyglmain',
+        component: './Fygl/FyglMain',
+      },
+      {
         path: '/dashboard',
         name: 'dashboard',
         icon: 'dashboard',

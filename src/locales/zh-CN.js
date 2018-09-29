@@ -38,6 +38,7 @@ export default {
   'component.noticeIcon.empty': '暂无数据',
   'menu.home': '首页',
   'menu.dashboard': 'Dashboard',
+  'menu.fyglmain': '房源管理',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
   'menu.dashboard.workplace': '工作台',
