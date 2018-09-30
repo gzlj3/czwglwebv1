@@ -59,13 +59,22 @@ const user = [
   '仲尼',
 ];
 
+const statuses=[
+  'success',
+  'exception', 
+  'active'
+]
+
+
 function fyglList(count) {
   const list = [];
   for (let i = 0; i < count; i += 1) {
     list.push({
       fwmc: `${(i % 4) + 1}0${(i % 5) + 1}`,
       zhxm: user[i % 10],
-      szrq: new Date(new Date().getTime() - 1000 * 60 * 60 * 2 * i),
+      szrq: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 30),
+      percent: Math.ceil(Math.random()*100),
+      status: statuses[i % 3],
       dhhm: '13312345678',
     });
   }

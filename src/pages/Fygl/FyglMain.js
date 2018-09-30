@@ -19,7 +19,7 @@ import {
   Form,
   DatePicker,
   Select,
-  TextArea,
+  // TextArea,
 } from 'antd';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -31,7 +31,7 @@ const FormItem = Form.Item;
 // const RadioButton = Radio.Button;
 // const RadioGroup = Radio.Group;
 const SelectOption = Select.Option;
-// const { Search, TextArea } = Input;
+const { TextArea } = Input;
 
 @connect(({ fygl, loading }) => ({
   list: fygl,
@@ -51,7 +51,7 @@ class BasicList extends PureComponent {
     dispatch({
       type: 'fygl/fetch',
       payload: {
-        count: 5,
+        count: 50,
       },
     });
   }
@@ -158,28 +158,30 @@ class BasicList extends PureComponent {
     //   </div>
     // );
 
-    const paginationProps = {
-      showSizeChanger: true,
-      showQuickJumper: true,
-      pageSize: 5,
-      total: 50,
-    };
+    // const paginationProps = {
+    //   showSizeChanger: true,
+    //   showQuickJumper: true,
+    //   pageSize: 5,
+    //   total: 50,
+    // };
 
-    const ListContent = ({ data: { owner, createdAt, percent, status } }) => (
-      <div className={styles.listContent}>
-        <div className={styles.listContentItem}>
-          <span>Owner</span>
-          <p>{owner}</p>
-        </div>
-        <div className={styles.listContentItem}>
-          <span>开始时间</span>
-          <p>{moment(createdAt).format('YYYY-MM-DD HH:mm')}</p>
-        </div>
-        <div className={styles.listContentItem}>
-          <Progress percent={percent} status={status} strokeWidth={6} style={{ width: 180 }} />
-        </div>
-      </div>
-    );
+    // const ListContent = ({ data: { percent, status } }) => (
+      // <div className={styles.listContent}>
+      //   {/* <div className={styles.listContentItem}>
+      //     <span>收租日期</span>
+      //     <p>{moment(szrq).format('YYYY-MM-DD')}</p>
+      //   </div> */}
+      //   <div className={styles.listContentItem}>
+      //     <div>收租状态</div>
+      //     <Progress percent={percent} status={status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
+      //   </div>
+      // </div>
+      // <div>
+      //   {/* <span>收租日期</span>
+      //   <p>{moment(szrq).format('YYYY-MM-DD')}</p> */}
+      //   <Progress percent={percent} status={status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
+      // </div>
+  // );
 
     const MoreBtn = props => (
       <Dropdown
@@ -295,29 +297,42 @@ class BasicList extends PureComponent {
             <List
               size="large"
               rowKey="id"
+              grid={{gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 6 }}
               loading={loading}
-              pagination={paginationProps}
+              pagination={false}
               dataSource={list}
               renderItem={item => (
-                <List.Item
-                  actions={[
-                    <a
-                      onClick={e => {
+                <List.Item>
+                  {/* <List.Item.Meta
+                    // avatar={<Avatar src={item.logo} shape="square" size="large" />}
+                    title={<a href={item.href}>{item.fwmc}  {item.zhxm}</a>}
+                    description={`收租日期：${moment(item.szrq).format('YYYY-MM-DD')}`}
+                  />
+                  <div>收租状态&nbsp;</div>
+                  <div>
+                    <Progress percent={item.percent} status={item.status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
+                  </div> */}
+                  <Card
+                    title={`${item.fwmc}  ${item.zhxm}`}
+                    extra={<a href={item.href}>更多</a>}
+                    actions={[
+                      <a
+                        onClick={e => {
                         e.preventDefault();
                         this.showEditModal(item);
                       }}
-                    >
+                      >
                       编辑
-                    </a>,
-                    <MoreBtn current={item} />,
-                  ]}
-                >
-                  <List.Item.Meta
-                    // avatar={<Avatar src={item.logo} shape="square" size="large" />}
-                    title={<a href={item.href}>{item.fwmc}</a>}
-                    description={item.zhxm}
-                  />
-                  <ListContent data={item} />
+                      </a>,
+                      <MoreBtn current={item} />,
+                    ]}
+                  >
+                    <span>{`收租日期：${moment(item.szrq).format('YYYY-MM-DD')}`}</span>
+                    <span>
+                      <Progress percent={item.percent} status={item.status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
+                    </span>
+                  </Card>
+                  {/* <ListContent data={item} /> */}
                 </List.Item>
               )}
             />
