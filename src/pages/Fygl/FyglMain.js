@@ -8,7 +8,7 @@ import {
   // Row,
   // Col,
   // Radio,
-  Input,
+  // Input,
   Progress,
   Button,
   Icon,
@@ -17,8 +17,8 @@ import {
   // Avatar,
   Modal,
   Form,
-  DatePicker,
-  Select,
+  // DatePicker,
+  // Select,
   // TextArea,
 } from 'antd';
 
@@ -27,11 +27,13 @@ import Result from '@/components/Result';
 
 import styles from './FyglMain.less';
 
-const FormItem = Form.Item;
+import FmFyxx from '@/components/Forms/FmFyxx';
+
+// const FormItem = Form.Item;
 // const RadioButton = Radio.Button;
 // const RadioGroup = Radio.Group;
-const SelectOption = Select.Option;
-const { TextArea } = Input;
+// const SelectOption = Select.Option;
+// const { TextArea } = Input;
 
 @connect(({ fygl, loading }) => ({
   list: fygl,
@@ -92,7 +94,7 @@ class BasicList extends PureComponent {
     const id = current ? current.id : '';
 
     setTimeout(() => this.addBtn.blur(), 0);
-    form.validateFields((err, fieldsValue) => {
+    form.validateFieldsAndScroll((err, fieldsValue) => {
       if (err) return;
       this.setState({
         done: true,
@@ -117,8 +119,11 @@ class BasicList extends PureComponent {
       list: { list },
       loading,
     } = this.props;
+    // const {
+    //   form: { getFieldDecorator },
+    // } = this.props;
     const {
-      form: { getFieldDecorator },
+      form,
     } = this.props;
     const { visible, done, current = {} } = this.state;
 
@@ -216,7 +221,8 @@ class BasicList extends PureComponent {
       }
       return (
         <Form onSubmit={this.handleSubmit}>
-          <FormItem label="任务名称" {...this.formLayout}>
+          <FmFyxx form={form} current={current} />
+          {/* <FormItem label="任务名称" {...this.formLayout}>
             {getFieldDecorator('title', {
               rules: [{ required: true, message: '请输入任务名称' }],
               initialValue: current.title,
@@ -251,7 +257,7 @@ class BasicList extends PureComponent {
               rules: [{ message: '请输入至少五个字符的产品描述！', min: 5 }],
               initialValue: current.subDescription,
             })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
-          </FormItem>
+          </FormItem> */}
         </Form>
       );
     };
