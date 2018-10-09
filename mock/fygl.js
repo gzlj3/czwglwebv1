@@ -45,6 +45,7 @@
 //   '城镇中有那么多的酒馆，她却偏偏走进了我的酒馆',
 //   '那时候我只会想自己想要什么，从不想自己拥有什么',
 // ];
+let sourceData;
 
 const user = [
   '付小小',
@@ -70,6 +71,7 @@ function fyglList(count) {
   const list = [];
   for (let i = 0; i < count; i += 1) {
     list.push({
+      id: `fygl-list-${i}`,
       fwmc: `${(i % 4) + 1}0${(i % 5) + 1}`,
       zhxm: user[i % 10],
       szrq: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 30),
@@ -78,8 +80,41 @@ function fyglList(count) {
       dhhm: '13312345678',
     });
   }
-
   return list;
+}
+
+function postFyglList(req, res) {
+  const { /* url = '', */ body } = req;
+  // const params = getUrlParams(url);
+  const { method, id } = body;
+  // const count = (params.count * 1) || 20;
+  let result = sourceData;
+  if(!result) result={};
+
+  switch (method) {
+    case 'delete':
+      result = result.filter(item => item.id !== id);
+      break;
+    case 'update':
+      result.forEach((item, i) => {
+        if (item.id === id) {
+          result[i] = Object.assign(item, body);
+        }
+      });
+      break;
+    case 'post':
+    result.unshift({
+        ...body,
+        id: `fygl-list-${result.length}`,
+      });
+
+      break;
+    default:
+      break;
+  }
+  sourceData = result;
+
+  return res.json(result);
 }
 
 function getFyglList(req, res) {
@@ -88,9 +123,12 @@ function getFyglList(req, res) {
   const count = params.count * 1 || 20;
 
   const result = fyglList(count);
+  sourceData = result;
+
   return res.json(result);
 }
 
 export default {
-  'GET /api/fygl_list': getFyglList,
+  'GET /fygl/fygl_list': getFyglList,
+  'POST /fygl/fygl_list': postFyglList,
 };

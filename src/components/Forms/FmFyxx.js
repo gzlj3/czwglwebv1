@@ -18,6 +18,10 @@ class FmFyxx extends PureComponent {
     wrapperCol: { span: 13 },
   };
 
+  fieldParams = {
+    // validateTrigger: 'onBlur',
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
@@ -32,6 +36,7 @@ class FmFyxx extends PureComponent {
           {getFieldDecorator('fwmc', {
                 rules: [{ required: true, message: '请输入房屋名称' }],
                 initialValue: current.fwmc,
+                ...this.fieldParams,
                 })(<Input placeholder="" />)}
         </FormItem>
         <FormItem label="租户姓名" {...this.formLayout}>

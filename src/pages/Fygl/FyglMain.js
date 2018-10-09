@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { findDOMNode } from 'react-dom';
 import moment from 'moment';
 import { connect } from 'dva';
+import {PAGE_QUERY,PAGE_NEW,PAGE_UPDATED,PAGE_DELETE } from '@/utils/constants';
 import {
   List,
   Card,
@@ -41,7 +42,12 @@ import FmFyxx from '@/components/Forms/FmFyxx';
 }))
 @Form.create()
 class BasicList extends PureComponent {
-  state = { visible: false, done: false };
+  state = { 
+    // visible: false, 
+    // done: false, 
+    current: {},
+    pagestate: this.PAGE_QUERY,
+  };
 
   formLayout = {
     labelCol: { span: 7 },
@@ -53,15 +59,16 @@ class BasicList extends PureComponent {
     dispatch({
       type: 'fygl/fetch',
       payload: {
-        count: 50,
+        count: 10,
       },
     });
   }
 
-  showModal = () => {
+  addFy = () => {
     this.setState({
       visible: true,
-      current: undefined,
+      current: {},
+      pagestate: this.PAGE_NEW,
     });
   };
 
@@ -100,7 +107,7 @@ class BasicList extends PureComponent {
         done: true,
       });
       dispatch({
-        type: 'list/submit',
+        type: 'fygl/submit',
         payload: { id, ...fieldsValue },
       });
     });
@@ -109,7 +116,7 @@ class BasicList extends PureComponent {
   deleteItem = id => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'list/submit',
+      type: 'fygl/submit',
       payload: { id },
     });
   };
@@ -119,9 +126,6 @@ class BasicList extends PureComponent {
       list: { list },
       loading,
     } = this.props;
-    // const {
-    //   form: { getFieldDecorator },
-    // } = this.props;
     const {
       form,
     } = this.props;
@@ -222,62 +226,13 @@ class BasicList extends PureComponent {
       return (
         <Form onSubmit={this.handleSubmit}>
           <FmFyxx form={form} current={current} />
-          {/* <FormItem label="任务名称" {...this.formLayout}>
-            {getFieldDecorator('title', {
-              rules: [{ required: true, message: '请输入任务名称' }],
-              initialValue: current.title,
-            })(<Input placeholder="请输入" />)}
-          </FormItem>
-          <FormItem label="开始时间" {...this.formLayout}>
-            {getFieldDecorator('createdAt', {
-              rules: [{ required: true, message: '请选择开始时间' }],
-              initialValue: current.createdAt ? moment(current.createdAt) : null,
-            })(
-              <DatePicker
-                showTime
-                placeholder="请选择"
-                format="YYYY-MM-DD HH:mm:ss"
-                style={{ width: '100%' }}
-              />
-            )}
-          </FormItem>
-          <FormItem label="任务负责人" {...this.formLayout}>
-            {getFieldDecorator('owner', {
-              rules: [{ required: true, message: '请选择任务负责人' }],
-              initialValue: current.owner,
-            })(
-              <Select placeholder="请选择">
-                <SelectOption value="付晓晓">付晓晓</SelectOption>
-                <SelectOption value="周毛毛">周毛毛</SelectOption>
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...this.formLayout} label="产品描述">
-            {getFieldDecorator('subDescription', {
-              rules: [{ message: '请输入至少五个字符的产品描述！', min: 5 }],
-              initialValue: current.subDescription,
-            })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
-          </FormItem> */}
         </Form>
       );
     };
     return (
       <PageHeaderWrapper>
         <div className={styles.standardList}>
-          {/* <Card bordered={false}>
-            <Row>
-              <Col sm={8} xs={24}>
-                <Info title="我的待办" value="8个任务" bordered />
-              </Col>
-              <Col sm={8} xs={24}>
-                <Info title="本周任务平均处理时间" value="32分钟" bordered />
-              </Col>
-              <Col sm={8} xs={24}>
-                <Info title="本周完成任务数" value="24个任务" />
-              </Col>
-            </Row>
-          </Card> */}
-
+ 
           <Card
             className={styles.listCard}
             bordered
@@ -289,9 +244,9 @@ class BasicList extends PureComponent {
             <Button
               // type="dashed"
               type="primary"
-              // style={{ width: '100%', marginBottom: 8 }}
+              style={{ width: '100%', marginBottom: 8 }}
               icon="plus"
-              onClick={this.showModal}
+              onClick={this.addFy}
               ref={component => {
                 /* eslint-disable */
                 this.addBtn = findDOMNode(component);
@@ -319,7 +274,7 @@ class BasicList extends PureComponent {
                     <Progress percent={item.percent} status={item.status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
                   </div> */}
                   <Card
-                    title={`${item.fwmc}  ${item.zhxm}`}
+                    title={`${item.fwmc}  ${item.zhxm?item.zhxm:'（未出租）'}`}
                     extra={<a href={item.href}>更多</a>}
                     actions={[
                       <a
@@ -333,10 +288,15 @@ class BasicList extends PureComponent {
                       <MoreBtn current={item} />,
                     ]}
                   >
-                    <span>{`收租日期：${moment(item.szrq).format('YYYY-MM-DD')}`}</span>
-                    <span>
-                      <Progress percent={item.percent} status={item.status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
-                    </span>
+                    {(item.szrq)?
+                      <div>
+                        <span>{`收租日期：${moment(item.szrq).format('YYYY-MM-DD')}`}</span>
+                        <span>
+                          <Progress percent={item.percent} status={item.status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
+                        </span>
+                      </div>
+                      :''
+                    }
                   </Card>
                   {/* <ListContent data={item} /> */}
                 </List.Item>
@@ -345,7 +305,7 @@ class BasicList extends PureComponent {
           </Card>
         </div>
         <Modal
-          title={done ? null : `任务${current ? '编辑' : '添加'}`}
+          title={done ? null : `房源${current && current!=={} ? '编辑' : '添加'}`}
           className={styles.standardListForm}
           width={640}
           bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}

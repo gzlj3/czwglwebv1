@@ -67,12 +67,12 @@ export async function queryAdvancedProfile() {
 }
 
 export async function queryFyglList(params) {
-  return request(`/api/fygl_list?${stringify(params)}`);
+  return request(`/fygl/fygl_list?${stringify(params)}`);
 }
 
 export async function removeFakeList(params) {
   const { count = 5, ...restParams } = params;
-  return request(`/api/fake_list?count=${count}`, {
+  return request(`/fygl/fygl_list?count=${count}`, {
     method: 'POST',
     body: {
       ...restParams,
@@ -81,9 +81,9 @@ export async function removeFakeList(params) {
   });
 }
 
-export async function addFakeList(params) {
+export async function addFyglList(params) {
   const { count = 5, ...restParams } = params;
-  return request(`/api/fake_list?count=${count}`, {
+  return request(`/fygl/fygl_list?count=${count}`, {
     method: 'POST',
     body: {
       ...restParams,
@@ -94,7 +94,7 @@ export async function addFakeList(params) {
 
 export async function updateFakeList(params) {
   const { count = 5, ...restParams } = params;
-  return request(`/api/fake_list?count=${count}`, {
+  return request(`/fygl/fygl_list?count=${count}`, {
     method: 'POST',
     body: {
       ...restParams,

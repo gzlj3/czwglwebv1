@@ -1,4 +1,4 @@
-import { queryFyglList, removeFakeList, addFakeList, updateFakeList } from '@/services/fygl';
+import { queryFyglList, removeFakeList, addFyglList, updateFakeList } from '@/services/fygl';
 
 export default {
   namespace: 'fygl',
@@ -27,7 +27,7 @@ export default {
       if (payload.id) {
         callback = Object.keys(payload).length === 1 ? removeFakeList : updateFakeList;
       } else {
-        callback = addFakeList;
+        callback = addFyglList;
       }
       const response = yield call(callback, payload); // post
       yield put({
