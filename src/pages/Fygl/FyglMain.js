@@ -17,6 +17,7 @@ import {
   Menu,
   // Avatar,
   Modal,
+  Alert,
   Form,
   // DatePicker,
   // Select,
@@ -43,8 +44,8 @@ import FmFyxx from '@/components/Forms/FmFyxx';
 @Form.create()
 class BasicList extends PureComponent {
   state = { 
-    // visible: false, 
-    // done: false, 
+    visible: false, 
+    done: false, 
     current: {},
     pagestate: this.PAGE_QUERY,
   };
@@ -64,7 +65,7 @@ class BasicList extends PureComponent {
     });
   }
 
-  addFy = () => {
+  showModal = () => {
     this.setState({
       visible: true,
       current: {},
@@ -148,50 +149,6 @@ class BasicList extends PureComponent {
       ? { footer: null, onCancel: this.handleDone }
       : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
 
-    // const Info = ({ title, value, bordered }) => (
-    //   <div className={styles.headerInfo}>
-    //     <span>{title}</span>
-    //     <p>{value}</p>
-    //     {bordered && <em />}
-    //   </div>
-    // );
-
-    // const extraContent = (
-    //   <div className={styles.extraContent}>
-    //     <RadioGroup defaultValue="all">
-    //       <RadioButton value="all">全部</RadioButton>
-    //       <RadioButton value="progress">进行中</RadioButton>
-    //       <RadioButton value="waiting">等待中</RadioButton>
-    //     </RadioGroup>
-    //     <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
-    //   </div>
-    // );
-
-    // const paginationProps = {
-    //   showSizeChanger: true,
-    //   showQuickJumper: true,
-    //   pageSize: 5,
-    //   total: 50,
-    // };
-
-    // const ListContent = ({ data: { percent, status } }) => (
-      // <div className={styles.listContent}>
-      //   {/* <div className={styles.listContentItem}>
-      //     <span>收租日期</span>
-      //     <p>{moment(szrq).format('YYYY-MM-DD')}</p>
-      //   </div> */}
-      //   <div className={styles.listContentItem}>
-      //     <div>收租状态</div>
-      //     <Progress percent={percent} status={status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
-      //   </div>
-      // </div>
-      // <div>
-      //   {/* <span>收租日期</span>
-      //   <p>{moment(szrq).format('YYYY-MM-DD')}</p> */}
-      //   <Progress percent={percent} status={status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
-      // </div>
-  // );
-
     const MoreBtn = props => (
       <Dropdown
         overlay={
@@ -246,7 +203,7 @@ class BasicList extends PureComponent {
               type="primary"
               style={{ width: '100%', marginBottom: 8 }}
               icon="plus"
-              onClick={this.addFy}
+              onClick={this.showModal}
               ref={component => {
                 /* eslint-disable */
                 this.addBtn = findDOMNode(component);
@@ -264,15 +221,6 @@ class BasicList extends PureComponent {
               dataSource={list}
               renderItem={item => (
                 <List.Item>
-                  {/* <List.Item.Meta
-                    // avatar={<Avatar src={item.logo} shape="square" size="large" />}
-                    title={<a href={item.href}>{item.fwmc}  {item.zhxm}</a>}
-                    description={`收租日期：${moment(item.szrq).format('YYYY-MM-DD')}`}
-                  />
-                  <div>收租状态&nbsp;</div>
-                  <div>
-                    <Progress percent={item.percent} status={item.status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
-                  </div> */}
                   <Card
                     title={`${item.fwmc}  ${item.zhxm?item.zhxm:'（未出租）'}`}
                     extra={<a href={item.href}>更多</a>}
@@ -298,14 +246,16 @@ class BasicList extends PureComponent {
                       :''
                     }
                   </Card>
-                  {/* <ListContent data={item} /> */}
                 </List.Item>
               )}
             />
           </Card>
         </div>
+
         <Modal
           title={done ? null : `房源${current && current!=={} ? '编辑' : '添加'}`}
+          // style={{ top: 20 }}
+          // centered
           className={styles.standardListForm}
           width={640}
           bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
@@ -313,8 +263,19 @@ class BasicList extends PureComponent {
           visible={visible}
           {...modalFooter}
         >
+          <Alert message="Error" type="error" showIcon />
           {getModalContent()}
         </Modal>
+        {/* <Modal
+          title={done ? null : `房源${current && current!=={} ? '编辑' : '添加'}`}
+          className={styles.standardListForm}
+          width={640}
+          bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
+          destroyOnClose
+          visible
+        >
+          <span>aaaaaaaaaaaaaa</span>
+        </Modal> */}
       </PageHeaderWrapper>
     );
   }

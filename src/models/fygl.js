@@ -10,10 +10,18 @@ export default {
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryFyglList, payload);
-      yield put({
-        type: 'queryList',
-        payload: Array.isArray(response) ? response : [],
-      });
+      const {status,message,data} = response;
+      if(status>0){  // 业务返回错误
+        yield put({
+          type: 'handleError',
+          payload: {status,message,data},
+        });
+      }else{
+        yield put({
+          type: 'queryList',
+          payload: Array.isArray(data) ? data : [],
+        });
+      }
     },
     *appendFetch({ payload }, { call, put }) {
       const response = yield call(queryFyglList, payload);
@@ -30,6 +38,8 @@ export default {
         callback = addFyglList;
       }
       const response = yield call(callback, payload); // post
+      const {status} = response;
+
       yield put({
         type: 'queryList',
         payload: response,

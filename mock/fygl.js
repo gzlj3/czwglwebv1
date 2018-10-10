@@ -90,7 +90,6 @@ function postFyglList(req, res) {
   // const count = (params.count * 1) || 20;
   let result = sourceData;
   if(!result) result={};
-
   switch (method) {
     case 'delete':
       result = result.filter(item => item.id !== id);
@@ -113,6 +112,13 @@ function postFyglList(req, res) {
       break;
   }
   sourceData = result;
+  if(true){
+    res.send({
+      status: 1,
+      message: '存盘失败！',
+    });  
+    return;
+  }
 
   return res.json(result);
 }
@@ -125,7 +131,7 @@ function getFyglList(req, res) {
   const result = fyglList(count);
   sourceData = result;
 
-  return res.json(result);
+  return res.json({status:0,data:result});
 }
 
 export default {
