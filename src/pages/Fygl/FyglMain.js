@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { findDOMNode } from 'react-dom';
 import moment from 'moment';
 import { connect } from 'dva';
-import {PAGE_QUERY,PAGE_NEW,PAGE_UPDATED,PAGE_DELETE } from '@/utils/constants';
 import {
   List,
   Card,
@@ -25,26 +24,28 @@ import {
 } from 'antd';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import Result from '@/components/Result';
+// import Result from '@/components/Result';
 
 import styles from './FyglMain.less';
 
+import * as CONSTS from '@/utils/constants';
 import FmFyxx from '@/components/Forms/FmFyxx';
 
-@connect(({ fygl:{status,message,data}, loading }) => ({
+@connect(({ fygl: { status, message, data }, loading }) => ({
   status,
   message,
-  fyList:data,
+  fyList: data,
   submitting: loading.effects['fygl/submit'],
   loading: loading.models.fygl,
 }))
 @Form.create()
 class FyglMain extends PureComponent {
-  state = { 
-    fyDetailVisible: false,   //房源详细界面显示开关
-    done: false, 
+  state = {
+    fyDetailVisible: false, // 房源详细界面显示开关
+    // done: false,
     current: {},
-    pagestate: this.PAGE_QUERY,
+    // pagestate: this.PAGE_QUERY,
+    buttonAction: CONSTS.BUTTON_NONE,
   };
 
   formLayout = {
@@ -64,9 +65,10 @@ class FyglMain extends PureComponent {
 
   addFy = () => {
     this.setState({
-      fyDeailVisible: true,
+      fyDetailVisible: true,
       current: {},
-      pagestate: this.PAGE_NEW,
+      // pagestate: this.PAGE_NEW,
+      buttonAction: CONSTS.BUTTON_ADD,
     });
   };
 
@@ -74,7 +76,8 @@ class FyglMain extends PureComponent {
     this.setState({
       fyDetailVisible: true,
       current: item,
-      pagestate: this.PAGE_UPDATED,
+      // pagestate: this.PAGE_UPDATED,
+      buttonAction: CONSTS.BUTTON_MODIFY,
     });
   };
 
@@ -90,14 +93,16 @@ class FyglMain extends PureComponent {
     setTimeout(() => this.addBtn.blur(), 0);
     this.setState({
       fyDetailVisible: false,
-      pagestate: this.PAGE_QUERY,
+      // pagestate: this.PAGE_QUERY,
+      // action,
+      buttonAction: CONSTS.BUTTON_NONE,
     });
   };
 
   handleSubmit = e => {
     e.preventDefault();
     const { dispatch, form } = this.props;
-    const { current } = this.state;
+    const { buttonAction } = this.state;
     // const id = current ? current.id : '';
 
     setTimeout(() => this.addBtn.blur(), 0);
@@ -108,29 +113,24 @@ class FyglMain extends PureComponent {
       // });
       dispatch({
         type: 'fygl/submit',
-        payload: { id, ...fieldsValue },
+        payload: { buttonAction, ...fieldsValue },
       });
     });
   };
 
   deleteItem = id => {
     const { dispatch } = this.props;
+    // const { buttonAction} = this.state;
     dispatch({
       type: 'fygl/submit',
-      payload: { id },
+      payload: { buttonAction: CONSTS.BUTTON_DELETE, id },
     });
   };
 
   render() {
-    const {
-      fyList,
-      submitting,
-      loading,
-    } = this.props;
-    const {
-      form,
-    } = this.props;
-    const { visible, done, current = {} } = this.state;
+    const { fyList, loading } = this.props;
+    const { form } = this.props;
+    const { fyDetailVisible, current = {} } = this.state;
 
     const editAndDelete = (key, currentItem) => {
       if (key === 'edit') this.showEditModal(currentItem);
@@ -164,7 +164,7 @@ class FyglMain extends PureComponent {
       </Dropdown>
     );
 
-    const getModalContent = () => {
+    const getModalContent = () => (
       // if (done) {
       //   return (
       //     <Result
@@ -180,17 +180,15 @@ class FyglMain extends PureComponent {
       //     />
       //   );
       // }
-      return (
-        // <Form onSubmit={this.handleSubmit}>
-        <Form>
-          <FmFyxx form={form} current={current} />
-        </Form>
-      );
-    };
+      // <Form onSubmit={this.handleSubmit}>
+      <Form>
+        <FmFyxx form={form} current={current} />
+      </Form>
+    );
+
     return (
       <PageHeaderWrapper>
         <div className={styles.standardList}>
- 
           <Card
             className={styles.listCard}
             bordered
@@ -216,36 +214,43 @@ class FyglMain extends PureComponent {
             <List
               size="large"
               rowKey="id"
-              grid={{gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 6 }}
+              grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 6 }}
               loading={loading}
               pagination={false}
               dataSource={fyList}
               renderItem={item => (
                 <List.Item>
                   <Card
-                    title={`${item.fwmc}  ${item.zhxm?item.zhxm:'（未出租）'}`}
+                    title={`${item.fwmc}  ${item.zhxm ? item.zhxm : '（未出租）'}`}
                     extra={<a href={item.href}>更多</a>}
                     actions={[
                       <a
                         onClick={e => {
-                        e.preventDefault();
-                        this.showEditModal(item);
-                      }}
+                          e.preventDefault();
+                          this.showEditModal(item);
+                        }}
                       >
-                      编辑
+                        编辑
                       </a>,
                       <MoreBtn current={item} />,
                     ]}
                   >
-                    {(item.szrq)?
+                    {item.szrq ? (
                       <div>
                         <span>{`收租日期：${moment(item.szrq).format('YYYY-MM-DD')}`}</span>
                         <span>
-                          <Progress percent={item.percent} status={item.status} showInfo={false} strokeWidth={6} style={{ width: 120 }} />
+                          <Progress
+                            percent={item.percent}
+                            status={item.status}
+                            showInfo={false}
+                            strokeWidth={6}
+                            style={{ width: 120 }}
+                          />
                         </span>
                       </div>
-                      :''
-                    }
+                    ) : (
+                      ''
+                    )}
                   </Card>
                 </List.Item>
               )}
@@ -254,16 +259,16 @@ class FyglMain extends PureComponent {
         </div>
 
         <Modal
-          title={done ? null : `房源${current && current!=={} ? '编辑' : '添加'}`}
+          // title={done ? null : `房源${current && current!=={} ? '编辑' : '添加'}`}
           // style={{ top: 20 }}
           // centered
           className={styles.standardListForm}
           width={640}
-          bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
+          // bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
-          visible={this.fyDeailVisible}
+          visible={fyDetailVisible}
           confirmLoading={loading}
-          okText='保存'
+          okText="保存"
           onOk={this.handleSubmit}
           onCancel={this.handleCancel}
         >
