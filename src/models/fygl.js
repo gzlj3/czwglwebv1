@@ -1,22 +1,24 @@
 import { queryFyglList, removeFakeList, addFyglList, updateFakeList } from '@/services/fygl';
+import * as CONSTS from '@/utils/constants';
 
 export default {
   namespace: 'fygl',
 
   state: {
-    list: [],
+    status: CONSTS.SUCCESS,   // 远程处理返回状态
+    message: '',              // 远程处理返回信息
+    data: [],                 // 列表数据
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryFyglList, payload);
-      const {status,message,data} = response;
-      if(status>0){  // 业务返回错误
-        yield put({
-          type: 'handleError',
-          payload: {status,message,data},
-        });
-      }else{
+      const {status=CONSTS.SUCCESS,message,data} = response;
+      yield put({ // 更新远程处理返回状态
+        type: 'changeStatus',
+        payload: {status,message},
+      });
+      if(status===CONSTS.SUCCESS){  // 远程处理返回成功，更新列表数据
         yield put({
           type: 'queryList',
           payload: Array.isArray(data) ? data : [],
@@ -38,26 +40,38 @@ export default {
         callback = addFyglList;
       }
       const response = yield call(callback, payload); // post
-      const {status} = response;
-
-      yield put({
-        type: 'queryList',
-        payload: response,
+      const {status=CONSTS.SUCCESS,message,data} = response;
+      yield put({ // 更新远程处理返回状态
+        type: 'changeStatus',
+        payload: {status,message},
       });
+      if(status===CONSTS.SUCCESS){  // 远程处理返回成功，更新列表数据
+        yield put({
+          type: 'queryList',
+          payload: Array.isArray(data) ? data : [],
+        });
+      }
     },
   },
 
   reducers: {
+    changeStatus(state, action) {
+      return {
+        ...state,
+        status: action.payload.status,
+        message: action.payload.message,
+      };
+    },
     queryList(state, action) {
       return {
         ...state,
-        list: action.payload,
+        data: action.payload,
       };
     },
     appendList(state, action) {
       return {
         ...state,
-        list: state.list.concat(action.payload),
+        data: state.list.concat(action.payload),
       };
     },
   },

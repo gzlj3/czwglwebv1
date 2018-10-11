@@ -31,20 +31,17 @@ import styles from './FyglMain.less';
 
 import FmFyxx from '@/components/Forms/FmFyxx';
 
-// const FormItem = Form.Item;
-// const RadioButton = Radio.Button;
-// const RadioGroup = Radio.Group;
-// const SelectOption = Select.Option;
-// const { TextArea } = Input;
-
-@connect(({ fygl, loading }) => ({
-  list: fygl,
+@connect(({ fygl:{status,message,data}, loading }) => ({
+  status,
+  message,
+  fyList:data,
+  submitting: loading.effects['fygl/submit'],
   loading: loading.models.fygl,
 }))
 @Form.create()
-class BasicList extends PureComponent {
+class FyglMain extends PureComponent {
   state = { 
-    visible: false, 
+    fyDetailVisible: false,   //房源详细界面显示开关
     done: false, 
     current: {},
     pagestate: this.PAGE_QUERY,
@@ -65,33 +62,35 @@ class BasicList extends PureComponent {
     });
   }
 
-  showModal = () => {
+  addFy = () => {
     this.setState({
-      visible: true,
+      fyDeailVisible: true,
       current: {},
       pagestate: this.PAGE_NEW,
     });
   };
 
-  showEditModal = item => {
+  editFy = item => {
     this.setState({
-      visible: true,
+      fyDetailVisible: true,
       current: item,
+      pagestate: this.PAGE_UPDATED,
     });
   };
 
-  handleDone = () => {
-    setTimeout(() => this.addBtn.blur(), 0);
-    this.setState({
-      done: false,
-      visible: false,
-    });
-  };
+  // handleDone = () => {
+  //   setTimeout(() => this.addBtn.blur(), 0);
+  //   this.setState({
+  //     done: false,
+  //     visible: false,
+  //   });
+  // };
 
   handleCancel = () => {
     setTimeout(() => this.addBtn.blur(), 0);
     this.setState({
-      visible: false,
+      fyDetailVisible: false,
+      pagestate: this.PAGE_QUERY,
     });
   };
 
@@ -99,14 +98,14 @@ class BasicList extends PureComponent {
     e.preventDefault();
     const { dispatch, form } = this.props;
     const { current } = this.state;
-    const id = current ? current.id : '';
+    // const id = current ? current.id : '';
 
     setTimeout(() => this.addBtn.blur(), 0);
     form.validateFieldsAndScroll((err, fieldsValue) => {
       if (err) return;
-      this.setState({
-        done: true,
-      });
+      // this.setState({
+      //   done: true,
+      // });
       dispatch({
         type: 'fygl/submit',
         payload: { id, ...fieldsValue },
@@ -124,7 +123,8 @@ class BasicList extends PureComponent {
 
   render() {
     const {
-      list: { list },
+      fyList,
+      submitting,
       loading,
     } = this.props;
     const {
@@ -145,9 +145,9 @@ class BasicList extends PureComponent {
       }
     };
 
-    const modalFooter = done
-      ? { footer: null, onCancel: this.handleDone }
-      : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
+    // const modalFooter = !submitting
+    //   ? { footer: null, onCancel: this.handleDone }
+    //   : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
 
     const MoreBtn = props => (
       <Dropdown
@@ -165,23 +165,24 @@ class BasicList extends PureComponent {
     );
 
     const getModalContent = () => {
-      if (done) {
-        return (
-          <Result
-            type="success"
-            title="操作成功"
-            description="一系列的信息描述，很短同样也可以带标点。"
-            actions={
-              <Button type="primary" onClick={this.handleDone}>
-                知道了
-              </Button>
-            }
-            className={styles.formResult}
-          />
-        );
-      }
+      // if (done) {
+      //   return (
+      //     <Result
+      //       type="success"
+      //       title="操作成功"
+      //       description="一系列的信息描述，很短同样也可以带标点。"
+      //       actions={
+      //         <Button type="primary" onClick={this.handleDone}>
+      //           知道了
+      //         </Button>
+      //       }
+      //       className={styles.formResult}
+      //     />
+      //   );
+      // }
       return (
-        <Form onSubmit={this.handleSubmit}>
+        // <Form onSubmit={this.handleSubmit}>
+        <Form>
           <FmFyxx form={form} current={current} />
         </Form>
       );
@@ -203,7 +204,7 @@ class BasicList extends PureComponent {
               type="primary"
               style={{ width: '100%', marginBottom: 8 }}
               icon="plus"
-              onClick={this.showModal}
+              onClick={this.addFy}
               ref={component => {
                 /* eslint-disable */
                 this.addBtn = findDOMNode(component);
@@ -218,7 +219,7 @@ class BasicList extends PureComponent {
               grid={{gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 6 }}
               loading={loading}
               pagination={false}
-              dataSource={list}
+              dataSource={fyList}
               renderItem={item => (
                 <List.Item>
                   <Card
@@ -260,8 +261,11 @@ class BasicList extends PureComponent {
           width={640}
           bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
-          visible={visible}
-          {...modalFooter}
+          visible={this.fyDeailVisible}
+          confirmLoading={loading}
+          okText='保存'
+          onOk={this.handleSubmit}
+          onCancel={this.handleCancel}
         >
           <Alert message="Error" type="error" showIcon />
           {getModalContent()}
@@ -281,4 +285,4 @@ class BasicList extends PureComponent {
   }
 }
 
-export default BasicList;
+export default FyglMain;

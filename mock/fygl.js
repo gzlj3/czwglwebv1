@@ -112,15 +112,15 @@ function postFyglList(req, res) {
       break;
   }
   sourceData = result;
-  if(true){
-    res.send({
-      status: 1,
-      message: '存盘失败！',
-    });  
-    return;
-  }
-
-  return res.json(result);
+  // if(true){
+  //   res.send({
+  //     status: 1,
+  //     message: '存盘失败！',
+  //   });  
+  //   return;
+  // }
+ 
+  return res.json({data:result});
 }
 
 function getFyglList(req, res) {
@@ -131,7 +131,7 @@ function getFyglList(req, res) {
   const result = fyglList(count);
   sourceData = result;
 
-  return res.json({status:0,data:result});
+  return res.json({data:result});
 }
 
 export default {
