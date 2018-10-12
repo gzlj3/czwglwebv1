@@ -95,7 +95,10 @@ function postFyglList(req, res) {
       result = result.filter(item => item.id !== id);
       break;
     case 'update':
+      // console.log(`id:${id}`);
+      // console.log(body);
       result.forEach((item, i) => {
+        // console.log(`item.id:${item.id}`);
         if (item.id === id) {
           result[i] = Object.assign(item, body);
         }
@@ -115,7 +118,7 @@ function postFyglList(req, res) {
   // if(true){
   //   res.send({
   //     status: 1,
-  //     message: '存盘失败！',
+  //     message: 'db error!',
   //   });  
   //   return;
   // }

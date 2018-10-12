@@ -31,22 +31,24 @@ import styles from './FyglMain.less';
 import * as CONSTS from '@/utils/constants';
 import FmFyxx from '@/components/Forms/FmFyxx';
 
-@connect(({ fygl: { status, message, data }, loading }) => ({
+@connect(({ fygl: { status, message, data, currentObject, pageState }, loading }) => ({
   status,
   message,
   fyList: data,
-  submitting: loading.effects['fygl/submit'],
+  currentObject,
+  pageState,
+  // submitting: loading.effects['fygl/submit'],
   loading: loading.models.fygl,
 }))
 @Form.create()
 class FyglMain extends PureComponent {
-  state = {
-    fyDetailVisible: false, // 房源详细界面显示开关
-    // done: false,
-    current: {},
-    // pagestate: this.PAGE_QUERY,
-    buttonAction: CONSTS.BUTTON_NONE,
-  };
+  // state = {
+  //   fyDetailVisible: false, // 房源详细界面显示开关
+  //   // done: false,
+  //   // current: {},
+  //   // pagestate: this.PAGE_QUERY,
+  //   buttonAction: CONSTS.BUTTON_NONE,
+  // };
 
   formLayout = {
     labelCol: { span: 7 },
@@ -56,28 +58,34 @@ class FyglMain extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'fygl/fetch',
+      type: 'fygl/queryList',
       payload: {
-        count: 10,
+        count: 5,
       },
     });
   }
 
   addFy = () => {
-    this.setState({
-      fyDetailVisible: true,
-      current: {},
-      // pagestate: this.PAGE_NEW,
-      buttonAction: CONSTS.BUTTON_ADD,
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fygl/addFy',
     });
   };
 
-  editFy = item => {
-    this.setState({
-      fyDetailVisible: true,
-      current: item,
-      // pagestate: this.PAGE_UPDATED,
-      buttonAction: CONSTS.BUTTON_MODIFY,
+  editFy = (item) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fygl/editFy',
+      payload: item,
+    });
+  };
+
+  deleteFy = id => {
+    const { dispatch } = this.props;
+    // const { buttonAction} = this.state;
+    dispatch({
+      type: 'fygl/delete',
+      payload: { id },
     });
   };
 
@@ -91,18 +99,17 @@ class FyglMain extends PureComponent {
 
   handleCancel = () => {
     setTimeout(() => this.addBtn.blur(), 0);
-    this.setState({
-      fyDetailVisible: false,
-      // pagestate: this.PAGE_QUERY,
-      // action,
-      buttonAction: CONSTS.BUTTON_NONE,
+    const { fyList,dispatch } = this.props;
+    dispatch({
+      type: 'fygl/initData',
+      payload: fyList,
     });
   };
 
   handleSubmit = e => {
     e.preventDefault();
     const { dispatch, form } = this.props;
-    const { buttonAction } = this.state;
+    // const { buttonAction } = this.state;
     // const id = current ? current.id : '';
 
     setTimeout(() => this.addBtn.blur(), 0);
@@ -113,34 +120,27 @@ class FyglMain extends PureComponent {
       // });
       dispatch({
         type: 'fygl/submit',
-        payload: { buttonAction, ...fieldsValue },
+        payload: {...fieldsValue },
       });
     });
   };
 
-  deleteItem = id => {
-    const { dispatch } = this.props;
-    // const { buttonAction} = this.state;
-    dispatch({
-      type: 'fygl/submit',
-      payload: { buttonAction: CONSTS.BUTTON_DELETE, id },
-    });
-  };
 
   render() {
-    const { fyList, loading } = this.props;
+    const { fyList, loading, pageState, currentObject, status, message } = this.props;
     const { form } = this.props;
-    const { fyDetailVisible, current = {} } = this.state;
+    // const { fyDetailVisible, current = {} } = this.state;
+    const fyDetailVisible = [CONSTS.PAGE_QUERY,CONSTS.PAGE_NEW,CONSTS.PAGE_UPDATED].includes(pageState);
 
     const editAndDelete = (key, currentItem) => {
-      if (key === 'edit') this.showEditModal(currentItem);
+      if (key === 'edit') this.editFy(currentItem);
       else if (key === 'delete') {
         Modal.confirm({
-          title: '删除任务',
-          content: '确定删除该任务吗？',
+          title: '删除房源',
+          content: `确定删除该房源(${currentItem.fwmc})吗？`,
           okText: '确认',
           cancelText: '取消',
-          onOk: () => this.deleteItem(currentItem.id),
+          onOk: () => this.deleteFy(currentItem.id),
         });
       }
     };
@@ -152,7 +152,7 @@ class FyglMain extends PureComponent {
     const MoreBtn = props => (
       <Dropdown
         overlay={
-          <Menu onClick={({ key }) => editAndDelete(key, props.current)}>
+          <Menu onClick={({ key }) => editAndDelete(key, props.currentItem)}>
             <Menu.Item key="edit">编辑</Menu.Item>
             <Menu.Item key="delete">删除</Menu.Item>
           </Menu>
@@ -182,7 +182,7 @@ class FyglMain extends PureComponent {
       // }
       // <Form onSubmit={this.handleSubmit}>
       <Form>
-        <FmFyxx form={form} current={current} />
+        <FmFyxx form={form} current={currentObject} />
       </Form>
     );
 
@@ -227,12 +227,12 @@ class FyglMain extends PureComponent {
                       <a
                         onClick={e => {
                           e.preventDefault();
-                          this.showEditModal(item);
+                          this.editFy(item);
                         }}
                       >
                         编辑
                       </a>,
-                      <MoreBtn current={item} />,
+                      <MoreBtn currentItem={item} />,
                     ]}
                   >
                     {item.szrq ? (
@@ -259,20 +259,24 @@ class FyglMain extends PureComponent {
         </div>
 
         <Modal
-          // title={done ? null : `房源${current && current!=={} ? '编辑' : '添加'}`}
+          title={`房源${CONSTS.getPageStateInfo(pageState)}`}
           // style={{ top: 20 }}
-          // centered
+          centered
           className={styles.standardListForm}
           width={640}
           // bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
+          maskClosable={false}
           visible={fyDetailVisible}
           confirmLoading={loading}
           okText="保存"
           onOk={this.handleSubmit}
           onCancel={this.handleCancel}
         >
-          <Alert message="Error" type="error" showIcon />
+          {
+            !this.loading && status!==CONSTS.REMOTE_SUCCESS?
+              <Alert message={message} type="error" showIcon />:''
+          }
           {getModalContent()}
         </Modal>
         {/* <Modal

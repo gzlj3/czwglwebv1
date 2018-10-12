@@ -32,6 +32,11 @@ class FmFyxx extends PureComponent {
 
     return (
       <div>
+        <FormItem>
+          {getFieldDecorator('id', {
+                initialValue: current.id,
+                })(<Input type='hidden' />)}
+        </FormItem>
         <FormItem label="房屋名称" {...this.formLayout}>
           {getFieldDecorator('fwmc', {
                 rules: [{ required: true, message: '请输入房屋名称' }],
