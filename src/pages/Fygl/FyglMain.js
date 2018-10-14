@@ -31,9 +31,9 @@ import styles from './FyglMain.less';
 import * as CONSTS from '@/utils/constants';
 import FmFyxx from '@/components/Forms/FmFyxx';
 
-@connect(({ fygl: { status, message, data, currentObject, pageState }, loading }) => ({
+@connect(({ fygl: { status, msg, data, currentObject, pageState }, loading }) => ({
   status,
-  message,
+  msg,
   fyList: data,
   currentObject,
   pageState,
@@ -72,7 +72,7 @@ class FyglMain extends PureComponent {
     });
   };
 
-  editFy = (item) => {
+  editFy = item => {
     const { dispatch } = this.props;
     dispatch({
       type: 'fygl/editFy',
@@ -99,7 +99,7 @@ class FyglMain extends PureComponent {
 
   handleCancel = () => {
     setTimeout(() => this.addBtn.blur(), 0);
-    const { fyList,dispatch } = this.props;
+    const { fyList, dispatch } = this.props;
     dispatch({
       type: 'fygl/initData',
       payload: fyList,
@@ -120,17 +120,18 @@ class FyglMain extends PureComponent {
       // });
       dispatch({
         type: 'fygl/submit',
-        payload: {...fieldsValue },
+        payload: { ...fieldsValue },
       });
     });
   };
 
-
   render() {
-    const { fyList, loading, pageState, currentObject, status, message } = this.props;
+    const { fyList, loading, pageState, currentObject, status, msg } = this.props;
     const { form } = this.props;
     // const { fyDetailVisible, current = {} } = this.state;
-    const fyDetailVisible = [CONSTS.PAGE_QUERY,CONSTS.PAGE_NEW,CONSTS.PAGE_UPDATED].includes(pageState);
+    const fyDetailVisible = [CONSTS.PAGE_QUERY, CONSTS.PAGE_NEW, CONSTS.PAGE_UPDATED].includes(
+      pageState
+    );
 
     const editAndDelete = (key, currentItem) => {
       if (key === 'edit') this.editFy(currentItem);
@@ -165,22 +166,6 @@ class FyglMain extends PureComponent {
     );
 
     const getModalContent = () => (
-      // if (done) {
-      //   return (
-      //     <Result
-      //       type="success"
-      //       title="操作成功"
-      //       description="一系列的信息描述，很短同样也可以带标点。"
-      //       actions={
-      //         <Button type="primary" onClick={this.handleDone}>
-      //           知道了
-      //         </Button>
-      //       }
-      //       className={styles.formResult}
-      //     />
-      //   );
-      // }
-      // <Form onSubmit={this.handleSubmit}>
       <Form>
         <FmFyxx form={form} current={currentObject} />
       </Form>
@@ -198,9 +183,8 @@ class FyglMain extends PureComponent {
             // extra={extraContent}
           >
             <Button
-              // type="dashed"
               type="primary"
-              style={{ width: '100%', marginBottom: 8 }}
+              style={{ marginBottom: 8 }}
               icon="plus"
               onClick={this.addFy}
               ref={component => {
@@ -210,6 +194,19 @@ class FyglMain extends PureComponent {
               }}
             >
               添加房源
+            </Button>
+            <Button
+              type="primary"
+              style={{ marginBottom: 8, marginLeft: 8 }}
+              // icon="plus"
+              onClick={this.addFy}
+              ref={component => {
+                /* eslint-disable */
+                this.addBtn = findDOMNode(component);
+                /* eslint-enable */
+              }}
+            >
+              抄表
             </Button>
             <List
               size="large"
@@ -263,7 +260,7 @@ class FyglMain extends PureComponent {
           // style={{ top: 20 }}
           centered
           className={styles.standardListForm}
-          width={640}
+          width={800}
           // bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
           maskClosable={false}
@@ -273,22 +270,13 @@ class FyglMain extends PureComponent {
           onOk={this.handleSubmit}
           onCancel={this.handleCancel}
         >
-          {
-            !this.loading && status!==CONSTS.REMOTE_SUCCESS?
-              <Alert message={message} type="error" showIcon />:''
-          }
+          {!this.loading && status !== CONSTS.REMOTE_SUCCESS ? (
+            <Alert message={msg} type="error" showIcon />
+          ) : (
+            ''
+          )}
           {getModalContent()}
         </Modal>
-        {/* <Modal
-          title={done ? null : `房源${current && current!=={} ? '编辑' : '添加'}`}
-          className={styles.standardListForm}
-          width={640}
-          bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
-          destroyOnClose
-          visible
-        >
-          <span>aaaaaaaaaaaaaa</span>
-        </Modal> */}
       </PageHeaderWrapper>
     );
   }
