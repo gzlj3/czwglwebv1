@@ -60,12 +60,7 @@ const user = [
   '仲尼',
 ];
 
-const statuses=[
-  'success',
-  'exception', 
-  'active'
-]
-
+const statuses = ['success', 'exception', 'active'];
 
 function fyglList(count) {
   const list = [];
@@ -75,7 +70,7 @@ function fyglList(count) {
       fwmc: `${(i % 4) + 1}0${(i % 5) + 1}`,
       zhxm: user[i % 10],
       szrq: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 30),
-      percent: Math.ceil(Math.random()*100),
+      percent: Math.ceil(Math.random() * 100),
       status: statuses[i % 3],
       dhhm: '13312345678',
     });
@@ -89,7 +84,7 @@ function postFyglList(req, res) {
   const { method, id } = body;
   // const count = (params.count * 1) || 20;
   let result = sourceData;
-  if(!result) result={};
+  if (!result) result = {};
   switch (method) {
     case 'delete':
       result = result.filter(item => item.id !== id);
@@ -105,7 +100,7 @@ function postFyglList(req, res) {
       });
       break;
     case 'post':
-    result.unshift({
+      result.unshift({
         ...body,
         id: `fygl-list-${result.length}`,
       });
@@ -119,11 +114,11 @@ function postFyglList(req, res) {
   //   res.send({
   //     status: 1,
   //     message: 'db error!',
-  //   });  
+  //   });
   //   return;
   // }
- 
-  return res.json({data:result});
+
+  return res.json({ data: result });
 }
 
 function getFyglList(req, res) {
@@ -134,30 +129,36 @@ function getFyglList(req, res) {
   const result = fyglList(count);
   sourceData = result;
 
-  return res.json({data:result});
+  return res.json({ data: result });
 }
 
-function getSdbList(_,res) {
-  const result =  sourceData.map(value=>(
-    { id:value.id,
-      fwmc:value.fwmc,
-      zhxm:value.zhxm,
-      sbcds:0,
-      dbcds:0
-    }));
+function getSdbList(_, res) {
+  const result = sourceData.map(value => ({
+    id: value.id,
+    fwmc: value.fwmc,
+    zhxm: value.zhxm,
+    sbcds: 0,
+    dbcds: 0,
+  }));
 
-  return res.json({data:result});
+  return res.json({ data: result });
 }
 
-function getLastZd(req,res) {
-  const params = req.query;
-  const {fwmc} = params;
-  const result =  
-    { 
-      fwmc,
-    };
+function getLastZd(req, res) {
+  // const params = req.query;
+  // const { fwmc } = params;
+  const result = [
+    {
+      fwmc: '101',
+      zhxm: '张三',
+    },
+    {
+      fwmc: '101',
+      zhxm: '张三',
+    },
+  ];
 
-  return res.json({data:result});
+  return res.json({ data: result });
 }
 
 export default {

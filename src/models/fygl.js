@@ -1,4 +1,11 @@
-import { queryFyglList, querySdbList,queryLastZd, removeFyglList, addFyglList, updateFyglList } from '@/services/fygl';
+import {
+  queryFyglList,
+  querySdbList,
+  queryLastZd,
+  removeFyglList,
+  addFyglList,
+  updateFyglList,
+} from '@/services/fygl';
 import { message } from 'antd';
 import * as CONSTS from '@/utils/constants';
 
@@ -8,8 +15,9 @@ const initialState = {
   data: [], // 列表数据
   currentObject: {}, // 当前form操作对象
   pageState: CONSTS.PAGE_LIST, // 页面状态
-  sdbList: [],  //水电列表
-  buttonAction:CONSTS.BUTTON_NONE, // 当前处理按钮（动作）
+  sdbList: [], // 水电列表
+  zdList: [], // 帐单列表
+  buttonAction: CONSTS.BUTTON_NONE, // 当前处理按钮（动作）
 };
 
 function* handleAfterRemote(pageState, response, put) {
@@ -38,7 +46,7 @@ export default {
   state: initialState,
 
   effects: {
-    *queryLastZd({ payload }, { call, put}) {
+    *queryLastZd({ payload }, { call, put }) {
       const response = yield call(queryLastZd, payload);
       const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
       if (status !== CONSTS.REMOTE_SUCCESS) {
@@ -46,11 +54,11 @@ export default {
         return;
       }
       yield put({
-        type:'lastZd',
-        payload:data,
-      })
+        type: 'lastZd',
+        payload: data,
+      });
     },
-    *querySdbList({ payload }, { call, put}) {
+    *querySdbList({ payload }, { call, put }) {
       const response = yield call(querySdbList, payload);
       const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
       if (status !== CONSTS.REMOTE_SUCCESS) {
@@ -58,9 +66,9 @@ export default {
         return;
       }
       yield put({
-        type:'cb',
-        payload:data,
-      })
+        type: 'cb',
+        payload: data,
+      });
     },
     *queryList({ payload }, { call, put, select }) {
       const fyglState = yield select(state => state.fygl);
@@ -119,15 +127,15 @@ export default {
   },
 
   reducers: {
-    lastZd(state,action) {
+    lastZd(state, action) {
       return {
         ...state,
         pageState: CONSTS.PAGE_NEW,
         buttonAction: CONSTS.BUTTON_LASTZD,
-        currentObject: action.payload,
+        zdList: action.payload,
       };
     },
-    cb(state,action) {
+    cb(state, action) {
       return {
         ...state,
         pageState: CONSTS.PAGE_NEW,

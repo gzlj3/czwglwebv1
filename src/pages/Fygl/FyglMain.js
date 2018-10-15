@@ -33,16 +33,22 @@ import FmFyxx from '@/components/Forms/FmFyxx';
 import FmCb from '@/components/Forms/FmCb';
 import FmZd from '@/components/Forms/FmZd';
 
-@connect(({ fygl: { status, msg, data, currentObject, pageState,buttonAction,sdbList }, loading }) => ({
-  status,
-  msg,
-  fyList: data,
-  currentObject,
-  pageState,
-  buttonAction,
-  sdbList,
-  loading: loading.models.fygl,  
-}))
+@connect(
+  ({
+    fygl: { status, msg, data, currentObject, pageState, buttonAction, sdbList, zdList },
+    loading,
+  }) => ({
+    status,
+    msg,
+    fyList: data,
+    currentObject,
+    pageState,
+    buttonAction,
+    sdbList,
+    zdList,
+    loading: loading.models.fygl,
+  })
+)
 @Form.create()
 class FyglMain extends PureComponent {
   // state = {
@@ -144,7 +150,17 @@ class FyglMain extends PureComponent {
   };
 
   render() {
-    const { fyList, loading, pageState, currentObject, status, msg,buttonAction,sdbList } = this.props;
+    const {
+      fyList,
+      loading,
+      pageState,
+      currentObject,
+      status,
+      msg,
+      buttonAction,
+      sdbList,
+      zdList,
+    } = this.props;
     const { form } = this.props;
     // const { fyDetailVisible, current = {} } = this.state;
     const fyDetailVisible = [CONSTS.PAGE_QUERY, CONSTS.PAGE_NEW, CONSTS.PAGE_UPDATED].includes(
@@ -183,19 +199,13 @@ class FyglMain extends PureComponent {
       </Dropdown>
     );
 
-    const getCurrentForm = () =>{
-      if(buttonAction===CONSTS.BUTTON_CB) 
-        return <FmCb form={form} sdbList={sdbList} />
-      if(buttonAction===CONSTS.BUTTON_LASTZD) 
-        return <FmZd form={form} current={currentObject} />
-      return <FmFyxx form={form} current={currentObject} />
-    }
+    const getCurrentForm = () => {
+      if (buttonAction === CONSTS.BUTTON_CB) return <FmCb form={form} sdbList={sdbList} />;
+      if (buttonAction === CONSTS.BUTTON_LASTZD) return <FmZd form={form} zdList={zdList} />;
+      return <FmFyxx form={form} current={currentObject} />;
+    };
 
-    const getModalContent = () => (
-      <Form>
-        {getCurrentForm()}
-      </Form>
-    );
+    const getModalContent = () => <Form>{getCurrentForm()}</Form>;
 
     return (
       <PageHeaderWrapper>
@@ -247,24 +257,27 @@ class FyglMain extends PureComponent {
                     title={`${item.fwmc}  ${item.zhxm ? item.zhxm : '（未出租）'}`}
                     extra={<a href={item.href}>更多</a>}
                     actions={[
-                      <a  onClick={e => {
+                      <a
+                        onClick={e => {
                           e.preventDefault();
                           this.editFy(item);
                         }}
                       >
                         编辑
                       </a>,
-                      <a  onClick={e => {
-                        e.preventDefault();
-                        this.lastZd(item);
-                      }}
+                      <a
+                        onClick={e => {
+                          e.preventDefault();
+                          this.lastZd(item);
+                        }}
                       >
                         帐单
                       </a>,
-                      <a  onClick={e => {
-                        e.preventDefault();
-                        this.sz(item);
-                      }}
+                      <a
+                        onClick={e => {
+                          e.preventDefault();
+                          this.sz(item);
+                        }}
                       >
                         收租
                       </a>,
@@ -299,7 +312,7 @@ class FyglMain extends PureComponent {
           // style={{ top: 20 }}
           centered
           // className={styles.standardListForm}
-          width={800}
+          width={900}
           // bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
           maskClosable={false}
@@ -311,8 +324,9 @@ class FyglMain extends PureComponent {
         >
           {!this.loading && status !== CONSTS.REMOTE_SUCCESS ? (
             <Alert message={msg} type="error" showIcon />
-            ) : ('')
-          }
+          ) : (
+            ''
+          )}
           {getModalContent()}
         </Modal>
       </PageHeaderWrapper>
