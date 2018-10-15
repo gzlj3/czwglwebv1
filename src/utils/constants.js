@@ -12,6 +12,5 @@ export const REMOTE_WAITTING = 10; // 等待远程处理返回状态
 
 // 按钮点击动作
 export const BUTTON_NONE = 0; // 无动作
-export const BUTTON_ADD = 1; // 添加动作
-export const BUTTON_MODIFY = 2; // 修改动作
-export const BUTTON_DELETE = 3; // 删除动作
+export const BUTTON_CB = 1; // 抄表
+export const BUTTON_LASTZD = 2; // 查看/处理最近帐单

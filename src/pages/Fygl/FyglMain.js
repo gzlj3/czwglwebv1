@@ -30,15 +30,18 @@ import styles from './FyglMain.less';
 
 import * as CONSTS from '@/utils/constants';
 import FmFyxx from '@/components/Forms/FmFyxx';
+import FmCb from '@/components/Forms/FmCb';
+import FmZd from '@/components/Forms/FmZd';
 
-@connect(({ fygl: { status, msg, data, currentObject, pageState }, loading }) => ({
+@connect(({ fygl: { status, msg, data, currentObject, pageState,buttonAction,sdbList }, loading }) => ({
   status,
   msg,
   fyList: data,
   currentObject,
   pageState,
-  // submitting: loading.effects['fygl/submit'],
-  loading: loading.models.fygl,
+  buttonAction,
+  sdbList,
+  loading: loading.models.fygl,  
 }))
 @Form.create()
 class FyglMain extends PureComponent {
@@ -65,6 +68,13 @@ class FyglMain extends PureComponent {
     });
   }
 
+  cb = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fygl/querySdbList',
+    });
+  };
+
   addFy = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -77,6 +87,14 @@ class FyglMain extends PureComponent {
     dispatch({
       type: 'fygl/editFy',
       payload: item,
+    });
+  };
+
+  lastZd = item => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fygl/queryLastZd',
+      payload: item.fwmc,
     });
   };
 
@@ -126,7 +144,7 @@ class FyglMain extends PureComponent {
   };
 
   render() {
-    const { fyList, loading, pageState, currentObject, status, msg } = this.props;
+    const { fyList, loading, pageState, currentObject, status, msg,buttonAction,sdbList } = this.props;
     const { form } = this.props;
     // const { fyDetailVisible, current = {} } = this.state;
     const fyDetailVisible = [CONSTS.PAGE_QUERY, CONSTS.PAGE_NEW, CONSTS.PAGE_UPDATED].includes(
@@ -165,9 +183,17 @@ class FyglMain extends PureComponent {
       </Dropdown>
     );
 
+    const getCurrentForm = () =>{
+      if(buttonAction===CONSTS.BUTTON_CB) 
+        return <FmCb form={form} sdbList={sdbList} />
+      if(buttonAction===CONSTS.BUTTON_LASTZD) 
+        return <FmZd form={form} current={currentObject} />
+      return <FmFyxx form={form} current={currentObject} />
+    }
+
     const getModalContent = () => (
       <Form>
-        <FmFyxx form={form} current={currentObject} />
+        {getCurrentForm()}
       </Form>
     );
 
@@ -199,7 +225,7 @@ class FyglMain extends PureComponent {
               type="primary"
               style={{ marginBottom: 8, marginLeft: 8 }}
               // icon="plus"
-              onClick={this.addFy}
+              onClick={this.cb}
               ref={component => {
                 /* eslint-disable */
                 this.addBtn = findDOMNode(component);
@@ -221,13 +247,26 @@ class FyglMain extends PureComponent {
                     title={`${item.fwmc}  ${item.zhxm ? item.zhxm : '（未出租）'}`}
                     extra={<a href={item.href}>更多</a>}
                     actions={[
-                      <a
-                        onClick={e => {
+                      <a  onClick={e => {
                           e.preventDefault();
                           this.editFy(item);
                         }}
                       >
                         编辑
+                      </a>,
+                      <a  onClick={e => {
+                        e.preventDefault();
+                        this.lastZd(item);
+                      }}
+                      >
+                        帐单
+                      </a>,
+                      <a  onClick={e => {
+                        e.preventDefault();
+                        this.sz(item);
+                      }}
+                      >
+                        收租
                       </a>,
                       <MoreBtn currentItem={item} />,
                     ]}
@@ -259,7 +298,7 @@ class FyglMain extends PureComponent {
           title={`房源${CONSTS.getPageStateInfo(pageState)}`}
           // style={{ top: 20 }}
           centered
-          className={styles.standardListForm}
+          // className={styles.standardListForm}
           width={800}
           // bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
@@ -272,9 +311,8 @@ class FyglMain extends PureComponent {
         >
           {!this.loading && status !== CONSTS.REMOTE_SUCCESS ? (
             <Alert message={msg} type="error" showIcon />
-          ) : (
-            ''
-          )}
+            ) : ('')
+          }
           {getModalContent()}
         </Modal>
       </PageHeaderWrapper>

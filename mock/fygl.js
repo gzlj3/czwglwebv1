@@ -137,7 +137,32 @@ function getFyglList(req, res) {
   return res.json({data:result});
 }
 
+function getSdbList(_,res) {
+  const result =  sourceData.map(value=>(
+    { id:value.id,
+      fwmc:value.fwmc,
+      zhxm:value.zhxm,
+      sbcds:0,
+      dbcds:0
+    }));
+
+  return res.json({data:result});
+}
+
+function getLastZd(req,res) {
+  const params = req.query;
+  const {fwmc} = params;
+  const result =  
+    { 
+      fwmc,
+    };
+
+  return res.json({data:result});
+}
+
 export default {
   'GET /fygl/fygl_list': getFyglList,
+  'GET /fygl/sdb_list': getSdbList,
+  'GET /fygl/lastzd': getLastZd,
   'POST /fygl/fygl_list': postFyglList,
 };
