@@ -273,14 +273,6 @@ class FyglMain extends PureComponent {
                       >
                         帐单
                       </a>,
-                      <a
-                        onClick={e => {
-                          e.preventDefault();
-                          this.sz(item);
-                        }}
-                      >
-                        收租
-                      </a>,
                       <MoreBtn currentItem={item} />,
                     ]}
                   >
