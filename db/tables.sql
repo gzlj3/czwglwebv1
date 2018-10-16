@@ -19,6 +19,8 @@ CREATE TABLE `house` (
   `glf` int(11) DEFAULT NULL COMMENT '管理费',
   `ljf` int(11) DEFAULT NULL COMMENT '垃圾费',
   `qtf` int(11) DEFAULT NULL COMMENT '其它费',
+  `dbcds` int(11) DEFAULT NULL COMMENT '电本次读数',
+  `sbcds` int(11) DEFAULT NULL COMMENT '水本次读数',
   `bz` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`houseid`),
   UNIQUE KEY `ind_fwmc` (`yyhid`,`fwmc`)
@@ -50,11 +52,4 @@ CREATE TABLE `housefy` (
   `bz` varchar(100) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`housefyid`),
   KEY `ind_houseid_rq12` (`houseid`,`rq1`,`rq2`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `housesdb` (
-  `houseid` varchar(32) NOT NULL COMMENT '房屋ID',
-  `cbrq` date DEFAULT NULL COMMENT '抄表日期',
-  `dbcds` int(11) DEFAULT NULL COMMENT '电本次读数',
-  `sbcds` int(11) DEFAULT NULL COMMENT '水本次读数'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
