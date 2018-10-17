@@ -30,8 +30,11 @@ class FmFyxx extends PureComponent {
     return (
       <div>
         <FormItem>
-          {getFieldDecorator('id', {
-            initialValue: current.id,
+          {getFieldDecorator('houseid', {
+            initialValue: current.houseid,
+          })(<Input type="hidden" />)}
+          {getFieldDecorator('yyhid', {
+            initialValue: current.yyhid,
           })(<Input type="hidden" />)}
         </FormItem>
         <Row>

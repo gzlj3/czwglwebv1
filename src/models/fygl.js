@@ -147,6 +147,7 @@ export default {
       return {
         ...state,
         pageState: CONSTS.PAGE_NEW,
+        buttonAction: CONSTS.BUTTON_ADDFY,
         currentObject: {},
       };
     },
