@@ -99,4 +99,11 @@ export default {
   cssnano: {
     mergeRules: false,
   },
+
+  proxy: {
+    '/fygl': {
+      'target': 'http://localhost:8080/',
+      'changeOrigin': true,
+    },
+  },  
 };
