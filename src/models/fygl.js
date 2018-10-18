@@ -21,28 +21,27 @@ const initialState = {
   buttonAction: CONSTS.BUTTON_NONE, // 当前处理按钮（动作）
 };
 
-function handleFyList(buttonAction,fyList,data){
-  let cloneFyList = fyList;  // 直接赋值，暂未clone，看是否会出问题
+function handleFyList(buttonAction, fyList, data) {
+  let cloneFyList = fyList; // 直接赋值，暂未clone，看是否会出问题
   const house = data[0];
-  if(buttonAction === CONSTS.BUTTON_ADDFY){
+  if (buttonAction === CONSTS.BUTTON_ADDFY) {
     cloneFyList.unshift(house);
-  }else if(buttonAction === CONSTS.BUTTON_EDITFY){
-    cloneFyList.forEach((element,i) => {
-      if(element.houseid === house.houseid)
-        cloneFyList[i] = Object.assign(element, house)
+  } else if (buttonAction === CONSTS.BUTTON_EDITFY) {
+    cloneFyList.forEach((element, i) => {
+      if (element.houseid === house.houseid) cloneFyList[i] = Object.assign(element, house);
     });
-  }else if(buttonAction === CONSTS.BUTTON_DELETEFY){
-    cloneFyList = cloneFyList.filter(element=>element.houseid !== house.houseid);
-  }else{
+  } else if (buttonAction === CONSTS.BUTTON_DELETEFY) {
+    cloneFyList = cloneFyList.filter(element => element.houseid !== house.houseid);
+  } else {
     cloneFyList = data;
   }
   return cloneFyList;
 }
 
 function* handleAfterRemote(pageState, response, put, select) {
-  if(!response) return;
-  const { status = CONSTS.REMOTE_SUCCESS, msg, data, } = response;
-  const {fyList,buttonAction} = yield select(state => state.fygl);
+  if (!response) return;
+  const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
+  const { fyList, buttonAction } = yield select(state => state.fygl);
   console.log(`buttonAction:${buttonAction}`);
 
   yield put({
@@ -55,18 +54,25 @@ function* handleAfterRemote(pageState, response, put, select) {
   if (status === CONSTS.REMOTE_SUCCESS) {
     // 远程处理返回成功，更新列表数据
     if (tsinfo.length > 0) message.info(`${tsinfo}成功完成！`);
-    
-    const resultList = handleFyList(buttonAction,fyList,data);
 
+    if (buttonAction === CONSTS.BUTTON_CB) {
+      // 抄表存盘完成需要重新查询词源列表
+      yield put({
+        type: 'queryList',
+        payload: {},
+      });
+      return;
+    }
+
+    const resultList = handleFyList(buttonAction, fyList, data);
     yield put({
       type: 'initData',
       payload: resultList,
     });
-  }else {
-    message.error(`${tsinfo}处理失败！${msg}`,10);
+  } else {
+    message.error(`${tsinfo}处理失败！${msg}`, 10);
   }
 }
-
 
 export default {
   namespace: 'fygl',
@@ -88,7 +94,7 @@ export default {
     },
     *querySdbList({ payload }, { call, put }) {
       const response = yield call(querySdbList, payload);
-      if(!response) return;
+      if (!response) return;
       const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
       if (status !== CONSTS.REMOTE_SUCCESS) {
         message.error(`查询失败！${msg}`);
@@ -101,8 +107,9 @@ export default {
     },
     *queryList({ payload }, { call, put, select }) {
       const fyglState = yield select(state => state.fygl);
+      fyglState.buttonAction = CONSTS.BUTTON_NONE;
       const response = yield call(queryFyglList, payload);
-      yield handleAfterRemote(fyglState.pageState, response, put,select);
+      yield handleAfterRemote(fyglState.pageState, response, put, select);
     },
     *delete({ payload }, { call, put, select }) {
       const response = yield call(removeFyglList, payload);

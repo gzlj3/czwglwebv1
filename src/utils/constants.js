@@ -17,10 +17,9 @@ export const BUTTON_DELETEFY = 3; // 删除房源
 export const BUTTON_CB = 4; // 抄表
 export const BUTTON_LASTZD = 5; // 查看/处理最近帐单
 export const getButtonActionInfo = buttonAction => {
-  try{
-    return ['', '添加房源', '编辑房源', '删除房源'][buttonAction];
-  }catch(e){
+  try {
+    return ['', '添加房源', '编辑房源', '删除房源', '抄表'][buttonAction];
+  } catch (e) {
     return '';
   }
-}
-
+};

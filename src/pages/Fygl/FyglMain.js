@@ -113,7 +113,6 @@ class FyglMain extends PureComponent {
     });
   };
 
-
   // handleDone = () => {
   //   setTimeout(() => this.addBtn.blur(), 0);
   //   this.setState({
@@ -140,11 +139,7 @@ class FyglMain extends PureComponent {
     setTimeout(() => this.addBtn.blur(), 0);
     form.validateFieldsAndScroll((err, fieldsValue) => {
       if (err) return;
-      // this.setState({
-      //   done: true,
-      // });
       console.log(fieldsValue);
-      console.log({ ...fieldsValue });
       dispatch({
         type: 'fygl/submit',
         payload: { ...fieldsValue },

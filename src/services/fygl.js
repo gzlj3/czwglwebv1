@@ -45,13 +45,13 @@ export async function updateFyglList(params) {
 }
 
 export async function updateSdbList(params) {
-  const paramArray = params.row;
+  // const paramArray = params.row;
 
   // const { count = 5, ...restParams } = params;
   return request(`/fygl/sdb_list`, {
     method: 'POST',
     body: {
-      paramArray,
+      ...params,
     },
   });
 }

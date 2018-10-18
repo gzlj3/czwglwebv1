@@ -1,11 +1,6 @@
 import React, { PureComponent } from 'react';
 // import moment from 'moment';
-import {
-  InputNumber,
-  Form,
-  List,
-  Card
-} from 'antd';
+import { Input, InputNumber, Form, List, Card } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -16,10 +11,10 @@ class FmCb extends PureComponent {
   };
 
   colLayout = {
-    sm:24,
-    md:12,
-    lg:8,
-    xxl:6,
+    sm: 24,
+    md: 12,
+    lg: 8,
+    xxl: 6,
   };
 
   fieldParams = {
@@ -31,7 +26,7 @@ class FmCb extends PureComponent {
       form: { getFieldDecorator },
     } = this.props;
     const {
-      sdbList,    // 水电列表
+      sdbList, // 水电列表
     } = this.props;
 
     return (
@@ -43,18 +38,23 @@ class FmCb extends PureComponent {
           // loading={loading}
           pagination={false}
           dataSource={sdbList}
-          renderItem={(item,i) => (
+          renderItem={(item, i) => (
             <List.Item>
+              <FormItem>
+                {getFieldDecorator(`rows[${i}].houseid`, {
+                  initialValue: item.houseid,
+                })(<Input type="hidden" />)}
+              </FormItem>
               <Card title={`${item.fwmc}  ${item.zhxm ? item.zhxm : '（未出租）'}`}>
                 <FormItem label="水表读数" {...this.formLayout}>
-                  {getFieldDecorator(`row[${i}].sbcds`, {
-                      initialValue: item.sbcds,
-                      })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
+                  {getFieldDecorator(`rows[${i}].sbcds`, {
+                    initialValue: item.sbcds,
+                  })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
                 </FormItem>
                 <FormItem label="电表读数" {...this.formLayout}>
-                  {getFieldDecorator(`row[${i}].dbcds`, {
-                      initialValue: item.dbcds,
-                      })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
+                  {getFieldDecorator(`rows[${i}].dbcds`, {
+                    initialValue: item.dbcds,
+                  })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
                 </FormItem>
               </Card>
             </List.Item>
@@ -62,6 +62,6 @@ class FmCb extends PureComponent {
         />
       </div>
     );
-  };
+  }
 }
 export default FmCb;
