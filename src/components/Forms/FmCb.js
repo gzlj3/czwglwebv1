@@ -43,16 +43,16 @@ class FmCb extends PureComponent {
           // loading={loading}
           pagination={false}
           dataSource={sdbList}
-          renderItem={item => (
+          renderItem={(item,i) => (
             <List.Item>
               <Card title={`${item.fwmc}  ${item.zhxm ? item.zhxm : '（未出租）'}`}>
                 <FormItem label="水表读数" {...this.formLayout}>
-                  {getFieldDecorator('sbcds', {
+                  {getFieldDecorator(`row[${i}].sbcds`, {
                       initialValue: item.sbcds,
                       })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
                 </FormItem>
                 <FormItem label="电表读数" {...this.formLayout}>
-                  {getFieldDecorator('dbcds', {
+                  {getFieldDecorator(`row[${i}].dbcds`, {
                       initialValue: item.dbcds,
                       })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
                 </FormItem>

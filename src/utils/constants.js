@@ -13,5 +13,14 @@ export const REMOTE_ERROR = 1; // 处理错误
 export const BUTTON_NONE = 0; // 无动作
 export const BUTTON_ADDFY = 1; // 添加房源
 export const BUTTON_EDITFY = 2; // 编辑房源
-export const BUTTON_CB = 3; // 抄表
-export const BUTTON_LASTZD = 4; // 查看/处理最近帐单
+export const BUTTON_DELETEFY = 3; // 删除房源
+export const BUTTON_CB = 4; // 抄表
+export const BUTTON_LASTZD = 5; // 查看/处理最近帐单
+export const getButtonActionInfo = buttonAction => {
+  try{
+    return ['', '添加房源', '编辑房源', '删除房源'][buttonAction];
+  }catch(e){
+    return '';
+  }
+}
+

@@ -16,11 +16,10 @@ export async function queryLastZd(params) {
 
 export async function removeFyglList(params) {
   const { count = 5, ...restParams } = params;
-  return request(`/fygl/fygl_list?count=${count}`, {
+  return request(`/fygl/fygl_list/${CONSTS.BUTTON_DELETEFY}?count=${count}`, {
     method: 'POST',
     body: {
       ...restParams,
-      method: 'delete',
     },
   });
 }
@@ -31,18 +30,28 @@ export async function addFyglList(params) {
     method: 'POST',
     body: {
       ...restParams,
-      method: 'post',
     },
   });
 }
 
 export async function updateFyglList(params) {
   const { count = 5, ...restParams } = params;
-  return request(`/fygl/fygl_list?count=${count}`, {
+  return request(`/fygl/fygl_list/${CONSTS.BUTTON_EDITFY}?count=${count}`, {
     method: 'POST',
     body: {
       ...restParams,
-      method: 'update',
+    },
+  });
+}
+
+export async function updateSdbList(params) {
+  const paramArray = params.row;
+
+  // const { count = 5, ...restParams } = params;
+  return request(`/fygl/sdb_list`, {
+    method: 'POST',
+    body: {
+      paramArray,
     },
   });
 }

@@ -35,12 +35,12 @@ import FmZd from '@/components/Forms/FmZd';
 
 @connect(
   ({
-    fygl: { status, msg, data, currentObject, pageState, buttonAction, sdbList, zdList },
+    fygl: { status, msg, fyList, currentObject, pageState, buttonAction, sdbList, zdList },
     loading,
   }) => ({
     status,
     msg,
-    fyList: data,
+    fyList,
     currentObject,
     pageState,
     buttonAction,
@@ -96,6 +96,15 @@ class FyglMain extends PureComponent {
     });
   };
 
+  deleteFy = houseid => {
+    const { dispatch } = this.props;
+    // const { buttonAction} = this.state;
+    dispatch({
+      type: 'fygl/delete',
+      payload: { houseid },
+    });
+  };
+
   lastZd = item => {
     const { dispatch } = this.props;
     dispatch({
@@ -104,14 +113,6 @@ class FyglMain extends PureComponent {
     });
   };
 
-  deleteFy = id => {
-    const { dispatch } = this.props;
-    // const { buttonAction} = this.state;
-    dispatch({
-      type: 'fygl/delete',
-      payload: { id },
-    });
-  };
 
   // handleDone = () => {
   //   setTimeout(() => this.addBtn.blur(), 0);
@@ -142,6 +143,8 @@ class FyglMain extends PureComponent {
       // this.setState({
       //   done: true,
       // });
+      console.log(fieldsValue);
+      console.log({ ...fieldsValue });
       dispatch({
         type: 'fygl/submit',
         payload: { ...fieldsValue },
@@ -175,7 +178,7 @@ class FyglMain extends PureComponent {
           content: `确定删除该房源(${currentItem.fwmc})吗？`,
           okText: '确认',
           cancelText: '取消',
-          onOk: () => this.deleteFy(currentItem.id),
+          onOk: () => this.deleteFy(currentItem.houseid),
         });
       }
     };

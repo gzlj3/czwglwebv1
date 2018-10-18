@@ -101,7 +101,7 @@ export default {
   },
 
   proxy: {
-    '/fygl': {
+    '/fygl/': {
       'target': 'http://localhost:8080/',
       'changeOrigin': true,
     },
