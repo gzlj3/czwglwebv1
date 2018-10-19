@@ -15,10 +15,11 @@ export const BUTTON_ADDFY = 1; // 添加房源
 export const BUTTON_EDITFY = 2; // 编辑房源
 export const BUTTON_DELETEFY = 3; // 删除房源
 export const BUTTON_CB = 4; // 抄表
-export const BUTTON_LASTZD = 5; // 查看/处理最近帐单
+export const BUTTON_MAKEZD = 5; // 创建帐单
+export const BUTTON_LASTZD = 6; // 查看/处理最近帐单
 export const getButtonActionInfo = buttonAction => {
   try {
-    return ['', '添加房源', '编辑房源', '删除房源', '抄表'][buttonAction];
+    return ['', '添加房源', '编辑房源', '删除房源', '抄表','创建帐单'][buttonAction];
   } catch (e) {
     return '';
   }

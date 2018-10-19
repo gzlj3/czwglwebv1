@@ -29,13 +29,11 @@ class FmFyxx extends PureComponent {
 
     return (
       <div>
-        <FormItem>
-          {getFieldDecorator('houseid', {
-            initialValue: current.houseid,
-          })(<Input type="hidden" />)}
-          {getFieldDecorator('yyhid', {
-            initialValue: current.yyhid,
-          })(<Input type="hidden" />)}
+        <FormItem>          
+          {getFieldDecorator('houseid', {initialValue: current.houseid,})(<Input type="hidden" />)}
+          {getFieldDecorator('yzhid', {initialValue: current.yzhid,})(<Input type="hidden" />)}
+          {getFieldDecorator('sfsz', {initialValue: current.sfsz,})(<Input type="hidden" />)}
+
         </FormItem>
         <Row>
           <Col {...this.colLayout}>
@@ -105,30 +103,58 @@ class FmFyxx extends PureComponent {
           </Col>
           <Col {...this.colLayout}>
             <FormItem label="电起始读数" {...this.formLayout}>
-              {getFieldDecorator('dqsds', {
-                initialValue: current.dqsds,
+              {getFieldDecorator('dscds', {
+                initialValue: current.dscds,
               })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
             <FormItem label="水起始读数" {...this.formLayout}>
-              {getFieldDecorator('sqsds', {
-                initialValue: current.sqsds,
+              {getFieldDecorator('sscds', {
+                initialValue: current.sscds,
+              })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col {...this.colLayout}>
+            <FormItem label="电本次读数" {...this.formLayout}>
+              {getFieldDecorator('dbcds', {
+                initialValue: current.dbcds,
+              })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col {...this.colLayout}>
+            <FormItem label="水本次读数" {...this.formLayout}>
+              {getFieldDecorator('sbcds', {
+                initialValue: current.sbcds,
               })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
             <FormItem label="电费单价" {...this.formLayout}>
-              {getFieldDecorator('dfdj', {
-                initialValue: current.dfdj,
+              {getFieldDecorator('ddj', {
+                initialValue: current.ddj,
               })(<InputNumber min={0} step={0.1} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
             <FormItem label="水费单价" {...this.formLayout}>
-              {getFieldDecorator('sfdj', {
-                initialValue: current.sfdj,
+              {getFieldDecorator('sdj', {
+                initialValue: current.sdj,
               })(<InputNumber min={0} step={0.1} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col {...this.colLayout}>
+            <FormItem label="电公摊度数" {...this.formLayout}>
+              {getFieldDecorator('dgtds', {
+                initialValue: current.dgtds,
+              })(<InputNumber min={0} step={1} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col {...this.colLayout}>
+            <FormItem label="水公摊度数" {...this.formLayout}>
+              {getFieldDecorator('sgtds', {
+                initialValue: current.sgtds,
+              })(<InputNumber min={0} step={1} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
@@ -139,9 +165,30 @@ class FmFyxx extends PureComponent {
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
+            <FormItem label="管理费" {...this.formLayout}>
+              {getFieldDecorator('glf', {
+                initialValue: current.glf,
+              })(<InputNumber min={0} step={5} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col {...this.colLayout}>
             <FormItem label="垃圾费" {...this.formLayout}>
               {getFieldDecorator('ljf', {
                 initialValue: current.ljf,
+              })(<InputNumber min={0} step={5} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col {...this.colLayout}>
+            <FormItem label="上月结转费" {...this.formLayout}>
+              {getFieldDecorator('syjzf', {
+                initialValue: current.syjzf,
+              })(<InputNumber min={0} step={5} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col {...this.colLayout}>
+            <FormItem label="其它费" {...this.formLayout}>
+              {getFieldDecorator('qtf', {
+                initialValue: current.qtf,
               })(<InputNumber min={0} step={5} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>

@@ -31,11 +31,12 @@ import styles from './FyglMain.less';
 import * as CONSTS from '@/utils/constants';
 import FmFyxx from '@/components/Forms/FmFyxx';
 import FmCb from '@/components/Forms/FmCb';
-import FmZd from '@/components/Forms/FmZd';
+// import FmZd from '@/components/Forms/FmZd';
+import FmMakezd from '@/components/Forms/FmMakezd';
 
 @connect(
   ({
-    fygl: { status, msg, fyList, currentObject, pageState, buttonAction, sdbList, zdList },
+    fygl: { status, msg, fyList, currentObject, pageState, buttonAction, sdbList, zdList,selectedRowKeys },
     loading,
   }) => ({
     status,
@@ -46,6 +47,7 @@ import FmZd from '@/components/Forms/FmZd';
     buttonAction,
     sdbList,
     zdList,
+    selectedRowKeys,
     loading: loading.models.fygl,
   })
 )
@@ -78,6 +80,13 @@ class FyglMain extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'fygl/querySdbList',
+    });
+  };
+
+  makezd = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fygl/queryZdList',
     });
   };
 
@@ -132,14 +141,18 @@ class FyglMain extends PureComponent {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { dispatch, form } = this.props;
-    // const { buttonAction } = this.state;
-    // const id = current ? current.id : '';
-
+    const { dispatch, form ,selectedRowKeys,buttonAction } = this.props;
     setTimeout(() => this.addBtn.blur(), 0);
+    if(buttonAction === CONSTS.BUTTON_MAKEZD){
+      dispatch({
+        type: 'fygl/submit',
+        payload: { selectedRowKeys },
+      });
+      return;
+    }
     form.validateFieldsAndScroll((err, fieldsValue) => {
       if (err) return;
-      console.log(fieldsValue);
+      // console.log(fieldsValue);
       dispatch({
         type: 'fygl/submit',
         payload: { ...fieldsValue },
@@ -147,6 +160,21 @@ class FyglMain extends PureComponent {
     });
   };
 
+  onMakezdSelectChange = (selectedRowKeys) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fygl/changeState',
+      payload: {selectedRowKeys},
+    });
+  };
+
+  // onMakezdSelectChange = (selectedRowKeys) => {
+  //   dispatch({
+  //     type: 'fygl/submit',
+  //     payload: { ...fieldsValue },
+  //   });
+  // };
+  
   render() {
     const {
       fyList,
@@ -158,6 +186,7 @@ class FyglMain extends PureComponent {
       buttonAction,
       sdbList,
       zdList,
+      selectedRowKeys,
     } = this.props;
     const { form } = this.props;
     // const { fyDetailVisible, current = {} } = this.state;
@@ -198,9 +227,21 @@ class FyglMain extends PureComponent {
     );
 
     const getCurrentForm = () => {
-      if (buttonAction === CONSTS.BUTTON_CB) return <FmCb form={form} sdbList={sdbList} />;
-      if (buttonAction === CONSTS.BUTTON_LASTZD) return <FmZd form={form} zdList={zdList} />;
-      return <FmFyxx form={form} current={currentObject} />;
+      switch(buttonAction){
+        case CONSTS.BUTTON_CB:
+          return <FmCb form={form} sdbList={sdbList} />;
+        case CONSTS.BUTTON_MAKEZD:
+          return <FmMakezd
+            form={form}
+            zdList={zdList}
+            selectedRowKeys={selectedRowKeys} 
+            onMakezdSelectChange={this.onMakezdSelectChange}
+          />;
+        default:
+          return <FmFyxx form={form} current={currentObject} />;
+      }
+      // if (buttonAction === CONSTS.BUTTON_CB) return <FmCb form={form} sdbList={sdbList} />;
+      // if (buttonAction === CONSTS.BUTTON_LASTZD) return <FmZd form={form} zdList={zdList} />;
     };
 
     const getModalContent = () => <Form>{getCurrentForm()}</Form>;
@@ -241,6 +282,19 @@ class FyglMain extends PureComponent {
               }}
             >
               抄表
+            </Button>
+            <Button
+              type="primary"
+              style={{ marginBottom: 8, marginLeft: 8 }}
+              // icon="plus"
+              onClick={this.makezd}
+              ref={component => {
+                /* eslint-disable */
+                this.addBtn = findDOMNode(component);
+                /* eslint-enable */
+              }}
+            >
+              创建帐单
             </Button>
             <List
               size="large"
