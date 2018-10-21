@@ -62,7 +62,7 @@ CREATE TABLE `housefy` (
   `syjzf` decimal(10,2) DEFAULT NULL COMMENT '上月结转费',
   `qtf` decimal(10,2) DEFAULT NULL COMMENT '其它费',
   `czje` int(11) DEFAULT NULL COMMENT '房租费',
-  `sfsz` varchar(1) DEFAULT NULL COMMENT '是否收租(0:未收，1:已收)',
+  `sfsz` varchar(1) DEFAULT NULL COMMENT '是否收租(0:未收,1:已收)',
   `szrq` date DEFAULT NULL COMMENT '下次收租日期',
   `bz` varchar(500) DEFAULT NULL COMMENT '备注',
   `fy1` decimal(10,2) DEFAULT NULL COMMENT '备用费用1',

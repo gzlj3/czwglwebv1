@@ -25,6 +25,7 @@ const initialState = {
 };
 
 function handleFyList(buttonAction, fyList, data) {
+  if (!data) return fyList;
   let cloneFyList = fyList; // 直接赋值，暂未clone
   const house = data[0];
   if (buttonAction === CONSTS.BUTTON_ADDFY) {
@@ -55,7 +56,6 @@ function* handleAfterRemote(pageState, response, put, select) {
   const tsinfo = CONSTS.getButtonActionInfo(buttonAction);
 
   if (status === CONSTS.REMOTE_SUCCESS) {
-    // 远程处理返回成功，更新列表数据
     if (tsinfo.length > 0) message.info(`${tsinfo}成功完成！`);
 
     const resultList = handleFyList(buttonAction, fyList, data);
@@ -91,7 +91,7 @@ export default {
       if (!response) return;
       const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
       if (status !== CONSTS.REMOTE_SUCCESS) {
-        message.error(`查询失败！${msg}`,10);
+        message.error(`查询失败！${msg}`, 10);
         return;
       }
       yield put({
@@ -121,6 +121,12 @@ export default {
       const response = yield call(fyglService.removeFyglList, payload);
       const fyglState = yield select(state => state.fygl);
       fyglState.buttonAction = CONSTS.BUTTON_DELETEFY;
+      yield handleAfterRemote(fyglState.pageState, response, put, select);
+    },
+    *qrsz({ payload }, { call, put, select }) {
+      const response = yield call(fyglService.qrsz, payload);
+      const fyglState = yield select(state => state.fygl);
+      // fyglState.buttonAction = CONSTS.BUTTON_DELETEFY;
       yield handleAfterRemote(fyglState.pageState, response, put, select);
     },
     *submit({ payload }, { call, put, select }) {
@@ -201,7 +207,7 @@ export default {
     changeState(state, action) {
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
     },
     initData(state, action) {

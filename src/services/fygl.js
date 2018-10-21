@@ -13,6 +13,9 @@ export async function querySdbList(params) {
 export async function queryLastZd(params) {
   return request(`/fygl/lastzd?${stringify(params)}`);
 }
+export async function qrsz(params) {
+  return request(`/fygl/handlezd?${stringify(params)}`);
+}
 
 export async function queryZdList(params) {
   return request(`/fygl/zd_list?${stringify(params)}`);

@@ -33,10 +33,21 @@ import FmFyxx from '@/components/Forms/FmFyxx';
 import FmCb from '@/components/Forms/FmCb';
 // import FmZd from '@/components/Forms/FmZd';
 import FmMakezd from '@/components/Forms/FmMakezd';
+import FmLastzd from '@/components/Forms/FmLastzd';
 
 @connect(
   ({
-    fygl: { status, msg, fyList, currentObject, pageState, buttonAction, sdbList, zdList,selectedRowKeys },
+    fygl: {
+      status,
+      msg,
+      fyList,
+      currentObject,
+      pageState,
+      buttonAction,
+      sdbList,
+      zdList,
+      selectedRowKeys,
+    },
     loading,
   }) => ({
     status,
@@ -118,7 +129,7 @@ class FyglMain extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'fygl/queryLastZd',
-      payload: item.fwmc,
+      payload: { houseid: item.houseid },
     });
   };
 
@@ -141,9 +152,9 @@ class FyglMain extends PureComponent {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { dispatch, form ,selectedRowKeys,buttonAction } = this.props;
+    const { dispatch, form, selectedRowKeys, buttonAction } = this.props;
     setTimeout(() => this.addBtn.blur(), 0);
-    if(buttonAction === CONSTS.BUTTON_MAKEZD){
+    if (buttonAction === CONSTS.BUTTON_MAKEZD) {
       dispatch({
         type: 'fygl/submit',
         payload: { selectedRowKeys },
@@ -160,21 +171,22 @@ class FyglMain extends PureComponent {
     });
   };
 
-  onMakezdSelectChange = (selectedRowKeys) => {
+  onMakezdSelectChange = selectedRowKeys => {
     const { dispatch } = this.props;
     dispatch({
       type: 'fygl/changeState',
-      payload: {selectedRowKeys},
+      payload: { selectedRowKeys },
     });
   };
 
-  // onMakezdSelectChange = (selectedRowKeys) => {
-  //   dispatch({
-  //     type: 'fygl/submit',
-  //     payload: { ...fieldsValue },
-  //   });
-  // };
-  
+  qrsz = housefyid => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fygl/qrsz',
+      payload: { housefyid },
+    });
+  };
+
   render() {
     const {
       fyList,
@@ -227,16 +239,20 @@ class FyglMain extends PureComponent {
     );
 
     const getCurrentForm = () => {
-      switch(buttonAction){
+      switch (buttonAction) {
         case CONSTS.BUTTON_CB:
           return <FmCb form={form} sdbList={sdbList} />;
         case CONSTS.BUTTON_MAKEZD:
-          return <FmMakezd
-            form={form}
-            zdList={zdList}
-            selectedRowKeys={selectedRowKeys} 
-            onMakezdSelectChange={this.onMakezdSelectChange}
-          />;
+          return (
+            <FmMakezd
+              form={form}
+              zdList={zdList}
+              selectedRowKeys={selectedRowKeys}
+              onMakezdSelectChange={this.onMakezdSelectChange}
+            />
+          );
+        case CONSTS.BUTTON_LASTZD:
+          return <FmLastzd form={form} zdList={zdList} qrsz={this.qrsz} />;
         default:
           return <FmFyxx form={form} current={currentObject} />;
       }

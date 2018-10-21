@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import {
   List,
+  Modal,
   // Input,
   // Form,
   Card,
@@ -25,11 +26,15 @@ class FmFyxx extends PureComponent {
     // validateTrigger: 'onBlur',
   };
 
+  szdx = () => {
+    window.clipboardData.setData('Text', 'test');
+  };
+
   render() {
     // const {
     // form: { getFieldDecorator },
     // } = this.props;
-    const { zdList } = this.props;
+    const { zdList, qrsz } = this.props;
 
     return (
       <div>
@@ -53,7 +58,13 @@ class FmFyxx extends PureComponent {
                   <a
                     onClick={e => {
                       e.preventDefault();
-                      this.editFy(item);
+                      Modal.confirm({
+                        title: '确认收租',
+                        content: `确定该房源(${item.fwmc})已经收租了吗？`,
+                        okText: '确认',
+                        cancelText: '取消',
+                        onOk: () => qrsz(item.housefyid),
+                      });
                     }}
                   >
                     确认收租
@@ -61,14 +72,14 @@ class FmFyxx extends PureComponent {
                   <a
                     onClick={e => {
                       e.preventDefault();
-                      this.lastZd(item);
+                      this.szdx(item);
                     }}
                   >
                     收租短信
                   </a>,
                 ]}
               >
-                content
+                水电费列表
               </Card>
             </List.Item>
           )}
