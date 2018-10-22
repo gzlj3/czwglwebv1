@@ -49,12 +49,26 @@ class FmCb extends PureComponent {
                 <FormItem label="水表读数" {...this.formLayout}>
                   {getFieldDecorator(`rows[${i}].sbcds`, {
                     initialValue: item.sbcds,
-                  })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
+                  })(
+                    <InputNumber
+                      min={0}
+                      step={10}
+                      placeholder={item.sscds}
+                      style={{ width: '100%' }}
+                    />
+                  )}
                 </FormItem>
                 <FormItem label="电表读数" {...this.formLayout}>
                   {getFieldDecorator(`rows[${i}].dbcds`, {
                     initialValue: item.dbcds,
-                  })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
+                  })(
+                    <InputNumber
+                      min={0}
+                      step={10}
+                      placeholder={item.dscds}
+                      style={{ width: '100%' }}
+                    />
+                  )}
                 </FormItem>
               </Card>
             </List.Item>

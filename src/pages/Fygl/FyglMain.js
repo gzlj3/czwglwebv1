@@ -41,10 +41,8 @@ import FmLastzd from '@/components/Forms/FmLastzd';
       status,
       msg,
       fyList,
-      currentObject,
-      pageState,
-      buttonAction,
-      // sdbList,
+      currentObject, // pageState,
+      buttonAction, // sdbList,
       sourceList,
       selectedRowKeys,
       modalAttribute,
@@ -55,7 +53,7 @@ import FmLastzd from '@/components/Forms/FmLastzd';
     msg,
     fyList,
     currentObject,
-    pageState,
+    // pageState,
     buttonAction,
     // sdbList,
     sourceList,
@@ -193,7 +191,7 @@ class FyglMain extends PureComponent {
     const {
       fyList,
       loading,
-      pageState,
+      // pageState,
       currentObject,
       status,
       msg,
@@ -205,9 +203,9 @@ class FyglMain extends PureComponent {
     } = this.props;
     const { form } = this.props;
     // const { fyDetailVisible, current = {} } = this.state;
-    const fyDetailVisible = [CONSTS.PAGE_QUERY, CONSTS.PAGE_NEW, CONSTS.PAGE_UPDATED].includes(
-      pageState
-    );
+    // const fyDetailVisible = [CONSTS.PAGE_QUERY, CONSTS.PAGE_NEW, CONSTS.PAGE_UPDATED].includes(
+    //   pageState
+    // );
 
     const editAndDelete = (key, currentItem) => {
       if (key === 'edit') this.editFy(currentItem);

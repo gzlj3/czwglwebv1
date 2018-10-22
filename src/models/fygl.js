@@ -19,8 +19,8 @@ const initialState = {
   msg: '', // 远程处理返回信息
   fyList: [], // 房源列表数据
   currentObject: {}, // 当前form操作对象
-  pageState: CONSTS.PAGE_LIST, // 页面状态
-  modalAttribute: {width:900,okText:"保存"}, // 弹框属性
+  // pageState: CONSTS.PAGE_LIST, // 页面状态
+  modalAttribute: { width: 1000, okText: '保存' }, // 弹框属性
   sourceList: [], // 保存列表
   selectedRowKeys: [], // 列表选中行
   buttonAction: CONSTS.BUTTON_NONE, // 当前处理按钮（动作）
@@ -44,7 +44,7 @@ function handleFyList(buttonAction, fyList, data) {
   return cloneFyList;
 }
 
-function* handleAfterRemote(pageState, response, put, select) {
+function* handleAfterRemote(response, put, select) {
   if (!response) return;
   const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
   const { fyList, buttonAction } = yield select(state => state.fygl);
@@ -70,51 +70,42 @@ function* handleAfterRemote(pageState, response, put, select) {
   }
 }
 
-function * cmdRefresh(buttonAction, response, put, select){
+function getRefreshState(buttonAction, response, fyglState) {
   let responseData;
-  if(response){
+  if (response) {
     // 如果有远程返回值，则检查返回值状态
-    const { status = CONSTS.REMOTE_SUCCESS, msg} = response;
+    const { status = CONSTS.REMOTE_SUCCESS, msg } = response;
     if (status !== CONSTS.REMOTE_SUCCESS) {
       message.info(`查询失败！${msg}`);
-      return;
+      return null;
     }
     responseData = response.data;
   }
-  const { modalAttribute } = yield select(state => state.fygl);
+  const { modalAttribute } = fyglState;
   const modalVisible = ![CONSTS.BUTTON_NONE].includes(buttonAction);
-  let tempModalAttribute = {
+  const tempModalAttribute = {
     ...modalAttribute,
-    title:CONSTS.getButtonActionInfo(buttonAction),
+    title: CONSTS.getButtonActionInfo(buttonAction),
     visible: modalVisible,
   };
 
-  let tempState ={
+  let tempState = {
     buttonAction,
     sourceList: responseData,
     modalAttribute: tempModalAttribute,
   };
 
-  switch(buttonAction){
+  switch (buttonAction) {
     case CONSTS.BUTTON_LASTZD:
-      // tempModalAttribute = {
-      //   ...tempModalAttribute,
-      //   okText: null,
-      // }
-      // tempState = {
-      //   ...tempState,
-      //   modalAttribute: tempModalAttribute,
-      // }
-      // tempState.modalAttribute.footer=null;
-        tempState.modalAttribute.okButtonProps={disabled:true,visible:false};
+      tempState.modalAttribute.okButtonProps = { disabled: true, visible: 'false' };
       break;
     case CONSTS.BUTTON_MAKEZD:
       tempState = {
         ...tempState,
-        pageState: CONSTS.PAGE_NEW,
+        // pageState: CONSTS.PAGE_NEW,
         sourceList: responseData[0].rows,
         selectedRowKeys: responseData[0].selectedRowKeys,
-      }
+      };
       break;
     // case CONSTS.BUTTON_CB:
     //   tempState = {
@@ -123,12 +114,18 @@ function * cmdRefresh(buttonAction, response, put, select){
     //   }
     //   break;
     default:
-      // tempState={}
+    // tempState={}
   }
 
+  return tempState;
+}
+
+function* cmdRefresh(buttonAction, response, put, select) {
+  const fyglState = yield select(state => state.fygl);
+  const tempState = getRefreshState(buttonAction, response, fyglState);
   yield put({
     type: 'changeState',
-    payload:tempState,
+    payload: tempState,
   });
 }
 
@@ -138,9 +135,13 @@ export default {
   state: initialState,
 
   effects: {
-    *queryLastZd({ payload }, { call, put,select }) {
+    // *addFy({ payload }, { call, put,select }) {
+    //   // const response = yield call(fyglService.queryLastZd, payload);
+    //   yield cmdRefresh(CONSTS.BUTTON_ADDFY,null,put,select);
+    // },
+    *queryLastZd({ payload }, { call, put, select }) {
       const response = yield call(fyglService.queryLastZd, payload);
-      yield cmdRefresh(CONSTS.BUTTON_LASTZD,response,put,select);
+      yield cmdRefresh(CONSTS.BUTTON_LASTZD, response, put, select);
       // const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
       // if (status !== CONSTS.REMOTE_SUCCESS) {
       //   message.info(`查询失败！${msg}`);
@@ -151,9 +152,9 @@ export default {
       //   payload: data,
       // });
     },
-    *queryZdList({ payload }, { call, put,select }) {
+    *queryZdList({ payload }, { call, put, select }) {
       const response = yield call(fyglService.queryZdList, payload);
-      yield cmdRefresh(CONSTS.BUTTON_MAKEZD,response,put,select);
+      yield cmdRefresh(CONSTS.BUTTON_MAKEZD, response, put, select);
       // if (!response) return;
       // const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
       // if (status !== CONSTS.REMOTE_SUCCESS) {
@@ -165,9 +166,9 @@ export default {
       //   payload: data[0],
       // });
     },
-    *querySdbList({ payload }, { call, put,select }) {
+    *querySdbList({ payload }, { call, put, select }) {
       const response = yield call(fyglService.querySdbList, payload);
-      yield cmdRefresh(CONSTS.BUTTON_CB,response,put,select);
+      yield cmdRefresh(CONSTS.BUTTON_CB, response, put, select);
 
       // if (!response) return;
       // const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
@@ -181,21 +182,21 @@ export default {
       // });
     },
     *queryList({ payload }, { call, put, select }) {
-      const fyglState = yield select(state => state.fygl);
+      // const fyglState = yield select(state => state.fygl);
       const response = yield call(fyglService.queryFyglList, payload);
-      yield handleAfterRemote(fyglState.pageState, response, put, select);
+      yield handleAfterRemote(response, put, select);
     },
     *delete({ payload }, { call, put, select }) {
       const response = yield call(fyglService.removeFyglList, payload);
       const fyglState = yield select(state => state.fygl);
       fyglState.buttonAction = CONSTS.BUTTON_DELETEFY;
-      yield handleAfterRemote(fyglState.pageState, response, put, select);
+      yield handleAfterRemote(response, put, select);
     },
     *qrsz({ payload }, { call, put, select }) {
       const response = yield call(fyglService.qrsz, payload);
-      const fyglState = yield select(state => state.fygl);
+      // const fyglState = yield select(state => state.fygl);
       // fyglState.buttonAction = CONSTS.BUTTON_DELETEFY;
-      yield handleAfterRemote(fyglState.pageState, response, put, select);
+      yield handleAfterRemote(response, put, select);
     },
     *submit({ payload }, { call, put, select }) {
       const fyglState = yield select(state => state.fygl);
@@ -211,7 +212,7 @@ export default {
       }
       const response = yield call(callback, payload); // post
 
-      yield handleAfterRemote(fyglState.pageState, response, put, select);
+      yield handleAfterRemote(response, put, select);
     },
   },
 
@@ -242,18 +243,18 @@ export default {
     //   };
     // },
     addFy(state) {
+      const refreshState = getRefreshState(CONSTS.BUTTON_ADDFY, null, state);
       return {
         ...state,
-        pageState: CONSTS.PAGE_NEW,
-        buttonAction: CONSTS.BUTTON_ADDFY,
+        ...refreshState,
         currentObject: {},
       };
     },
     editFy(state, action) {
+      const refreshState = getRefreshState(CONSTS.BUTTON_EDITFY, null, state);
       return {
         ...state,
-        pageState: CONSTS.PAGE_UPDATED,
-        buttonAction: CONSTS.BUTTON_EDITFY,
+        ...refreshState,
         currentObject: action.payload,
       };
     },
