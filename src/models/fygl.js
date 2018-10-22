@@ -12,15 +12,17 @@ import * as CONSTS from '@/utils/constants';
 
 import * as fyglService from '@/services/fygl';
 
+// let buttonAction = CONSTS.BUTTON_NONE;  // 临时保存当前点击的按钮
+
 const initialState = {
   status: CONSTS.REMOTE_SUCCESS, // 远程处理返回状态
   msg: '', // 远程处理返回信息
   fyList: [], // 房源列表数据
   currentObject: {}, // 当前form操作对象
   pageState: CONSTS.PAGE_LIST, // 页面状态
-  sdbList: [], // 水电列表
-  zdList: [], // 帐单列表
-  selectedRowKeys: [], // 帐单列表选中行
+  modalAttribute: {width:900,okText:"保存"}, // 弹框属性
+  sourceList: [], // 保存列表
+  selectedRowKeys: [], // 列表选中行
   buttonAction: CONSTS.BUTTON_NONE, // 当前处理按钮（动作）
 };
 
@@ -29,7 +31,7 @@ function handleFyList(buttonAction, fyList, data) {
   let cloneFyList = fyList; // 直接赋值，暂未clone
   const house = data[0];
   if (buttonAction === CONSTS.BUTTON_ADDFY) {
-    cloneFyList.unshift(house);
+    cloneFyList.push(house);
   } else if (buttonAction === CONSTS.BUTTON_EDITFY) {
     cloneFyList.forEach((element, i) => {
       if (element.houseid === house.houseid) cloneFyList[i] = Object.assign(element, house);
@@ -68,49 +70,115 @@ function* handleAfterRemote(pageState, response, put, select) {
   }
 }
 
+function * cmdRefresh(buttonAction, response, put, select){
+  let responseData;
+  if(response){
+    // 如果有远程返回值，则检查返回值状态
+    const { status = CONSTS.REMOTE_SUCCESS, msg} = response;
+    if (status !== CONSTS.REMOTE_SUCCESS) {
+      message.info(`查询失败！${msg}`);
+      return;
+    }
+    responseData = response.data;
+  }
+  const { modalAttribute } = yield select(state => state.fygl);
+  const modalVisible = ![CONSTS.BUTTON_NONE].includes(buttonAction);
+  let tempModalAttribute = {
+    ...modalAttribute,
+    title:CONSTS.getButtonActionInfo(buttonAction),
+    visible: modalVisible,
+  };
+
+  let tempState ={
+    buttonAction,
+    sourceList: responseData,
+    modalAttribute: tempModalAttribute,
+  };
+
+  switch(buttonAction){
+    case CONSTS.BUTTON_LASTZD:
+      // tempModalAttribute = {
+      //   ...tempModalAttribute,
+      //   okText: null,
+      // }
+      // tempState = {
+      //   ...tempState,
+      //   modalAttribute: tempModalAttribute,
+      // }
+      // tempState.modalAttribute.footer=null;
+        tempState.modalAttribute.okButtonProps={disabled:true,visible:false};
+      break;
+    case CONSTS.BUTTON_MAKEZD:
+      tempState = {
+        ...tempState,
+        pageState: CONSTS.PAGE_NEW,
+        sourceList: responseData[0].rows,
+        selectedRowKeys: responseData[0].selectedRowKeys,
+      }
+      break;
+    // case CONSTS.BUTTON_CB:
+    //   tempState = {
+    //     ...tempState,
+    //     // pageState: CONSTS.PAGE_NEW,
+    //   }
+    //   break;
+    default:
+      // tempState={}
+  }
+
+  yield put({
+    type: 'changeState',
+    payload:tempState,
+  });
+}
+
 export default {
   namespace: 'fygl',
 
   state: initialState,
 
   effects: {
-    *queryLastZd({ payload }, { call, put }) {
+    *queryLastZd({ payload }, { call, put,select }) {
       const response = yield call(fyglService.queryLastZd, payload);
-      const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
-      if (status !== CONSTS.REMOTE_SUCCESS) {
-        message.info(`查询失败！${msg}`);
-        return;
-      }
-      yield put({
-        type: 'lastZd',
-        payload: data,
-      });
+      yield cmdRefresh(CONSTS.BUTTON_LASTZD,response,put,select);
+      // const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
+      // if (status !== CONSTS.REMOTE_SUCCESS) {
+      //   message.info(`查询失败！${msg}`);
+      //   return;
+      // }
+      // yield put({
+      //   type: 'lastZd',
+      //   payload: data,
+      // });
     },
-    *queryZdList({ payload }, { call, put }) {
+    *queryZdList({ payload }, { call, put,select }) {
       const response = yield call(fyglService.queryZdList, payload);
-      if (!response) return;
-      const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
-      if (status !== CONSTS.REMOTE_SUCCESS) {
-        message.error(`查询失败！${msg}`, 10);
-        return;
-      }
-      yield put({
-        type: 'makezd',
-        payload: data[0],
-      });
+      yield cmdRefresh(CONSTS.BUTTON_MAKEZD,response,put,select);
+      // if (!response) return;
+      // const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
+      // if (status !== CONSTS.REMOTE_SUCCESS) {
+      //   message.error(`查询失败！${msg}`, 10);
+      //   return;
+      // }
+      // yield put({
+      //   type: 'makezd',
+      //   payload: data[0],
+      // });
     },
-    *querySdbList({ payload }, { call, put }) {
+    *querySdbList({ payload }, { call, put,select }) {
       const response = yield call(fyglService.querySdbList, payload);
-      if (!response) return;
-      const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
-      if (status !== CONSTS.REMOTE_SUCCESS) {
-        message.error(`查询失败！${msg}`);
-        return;
-      }
-      yield put({
-        type: 'cb',
-        payload: data,
-      });
+      yield cmdRefresh(CONSTS.BUTTON_CB,response,put,select);
+
+      // if (!response) return;
+      // const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
+      // if (status !== CONSTS.REMOTE_SUCCESS) {
+      //   message.error(`查询失败！${msg}`);
+      //   return;
+      // }
+      // yield put({
+      //   type: 'cb',
+      //   payload: data,
+      // });
     },
     *queryList({ payload }, { call, put, select }) {
       const fyglState = yield select(state => state.fygl);
@@ -148,31 +216,31 @@ export default {
   },
 
   reducers: {
-    lastZd(state, action) {
-      return {
-        ...state,
-        pageState: CONSTS.PAGE_NEW,
-        buttonAction: CONSTS.BUTTON_LASTZD,
-        zdList: action.payload,
-      };
-    },
-    makezd(state, action) {
-      return {
-        ...state,
-        pageState: CONSTS.PAGE_NEW,
-        buttonAction: CONSTS.BUTTON_MAKEZD,
-        zdList: action.payload.rows,
-        selectedRowKeys: action.payload.selectedRowKeys,
-      };
-    },
-    cb(state, action) {
-      return {
-        ...state,
-        pageState: CONSTS.PAGE_NEW,
-        buttonAction: CONSTS.BUTTON_CB,
-        sdbList: action.payload,
-      };
-    },
+    // lastZd(state, action) {
+    //   return {
+    //     ...state,
+    //     pageState: CONSTS.PAGE_NEW,
+    //     buttonAction: CONSTS.BUTTON_LASTZD,
+    //     zdList: action.payload,
+    //   };
+    // },
+    // makezd(state, action) {
+    //   return {
+    //     ...state,
+    //     pageState: CONSTS.PAGE_NEW,
+    //     buttonAction: CONSTS.BUTTON_MAKEZD,
+    //     zdList: action.payload.rows,
+    //     selectedRowKeys: action.payload.selectedRowKeys,
+    //   };
+    // },
+    // cb(state, action) {
+    //   return {
+    //     ...state,
+    //     pageState: CONSTS.PAGE_NEW,
+    //     buttonAction: CONSTS.BUTTON_CB,
+    //     sdbList: action.payload,
+    //   };
+    // },
     addFy(state) {
       return {
         ...state,

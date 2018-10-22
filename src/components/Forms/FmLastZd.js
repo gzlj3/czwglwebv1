@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import moment from 'moment';
 import {
   List,
   Modal,
@@ -30,18 +31,46 @@ class FmFyxx extends PureComponent {
     window.clipboardData.setData('Text', 'test');
   };
 
+  
   render() {
     // const {
     // form: { getFieldDecorator },
     // } = this.props;
     const { zdList, qrsz } = this.props;
 
+    const getActions = (item)=>
+      item.sfsz==='0'?[
+        <a
+          onClick={e => {
+            e.preventDefault();
+            Modal.confirm({
+              title: '确认收租',
+              content: `确定该房源(${item.fwmc})已经收租了吗？`,
+              okText: '确认',
+              cancelText: '取消',
+              onOk: () => qrsz(item.housefyid),
+            });
+          }}
+        >
+          确认收租
+        </a>,
+        <a
+          onClick={e => {
+            e.preventDefault();
+            this.szdx(item);
+          }}
+        >
+          收租短信
+        </a>,
+      ]   
+      :null;
+  
     return (
       <div>
         <List
           size="large"
           rowKey="id"
-          grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 2, xxl: 2 }}
+          grid={{ gutter: 16, xs: 1, sm: 1, md: 1, lg: 1, xl: 1, xxl: 1 }}
           // loading={loading}
           pagination={false}
           dataSource={zdList}
@@ -49,36 +78,18 @@ class FmFyxx extends PureComponent {
             <List.Item>
               <Card
                 title={
-                  <span>
-                    <b>{`${item.fwmc}  ${item.zhxm}`}</b>
-                    <span style={{ marginLeft: 30 }}>{`收费时段：${item.rq1}--${item.rq2}`}</span>
+                  <span style={{fontSize:20}}>
+                    <span>{`${item.fwmc}  ${item.zhxm}`}</span>
+                    <span style={{ marginLeft: 30 }}>
+                      {`${moment(item.szrq).format('YYYY年MM月')}费用:${item.fyhj}元,
+                        ${item.sfsz==='1'?'已结清':'未结清'}
+                      `}
+                    </span>
                   </span>
                 }
-                actions={[
-                  <a
-                    onClick={e => {
-                      e.preventDefault();
-                      Modal.confirm({
-                        title: '确认收租',
-                        content: `确定该房源(${item.fwmc})已经收租了吗？`,
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk: () => qrsz(item.housefyid),
-                      });
-                    }}
-                  >
-                    确认收租
-                  </a>,
-                  <a
-                    onClick={e => {
-                      e.preventDefault();
-                      this.szdx(item);
-                    }}
-                  >
-                    收租短信
-                  </a>,
-                ]}
+                actions={getActions(item)}
               >
+                <span style={{ marginLeft: 30 }}>{`收费时段：${item.rq1}--${item.rq2}`}</span>
                 水电费列表
               </Card>
             </List.Item>

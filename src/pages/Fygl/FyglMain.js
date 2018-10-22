@@ -44,9 +44,10 @@ import FmLastzd from '@/components/Forms/FmLastzd';
       currentObject,
       pageState,
       buttonAction,
-      sdbList,
-      zdList,
+      // sdbList,
+      sourceList,
       selectedRowKeys,
+      modalAttribute,
     },
     loading,
   }) => ({
@@ -56,9 +57,10 @@ import FmLastzd from '@/components/Forms/FmLastzd';
     currentObject,
     pageState,
     buttonAction,
-    sdbList,
-    zdList,
+    // sdbList,
+    sourceList,
     selectedRowKeys,
+    modalAttribute,
     loading: loading.models.fygl,
   })
 )
@@ -196,9 +198,10 @@ class FyglMain extends PureComponent {
       status,
       msg,
       buttonAction,
-      sdbList,
-      zdList,
+      // sdbList,
+      sourceList,
       selectedRowKeys,
+      modalAttribute,
     } = this.props;
     const { form } = this.props;
     // const { fyDetailVisible, current = {} } = this.state;
@@ -241,18 +244,18 @@ class FyglMain extends PureComponent {
     const getCurrentForm = () => {
       switch (buttonAction) {
         case CONSTS.BUTTON_CB:
-          return <FmCb form={form} sdbList={sdbList} />;
+          return <FmCb form={form} sdbList={sourceList} />;
         case CONSTS.BUTTON_MAKEZD:
           return (
             <FmMakezd
               form={form}
-              zdList={zdList}
+              zdList={sourceList}
               selectedRowKeys={selectedRowKeys}
               onMakezdSelectChange={this.onMakezdSelectChange}
             />
           );
         case CONSTS.BUTTON_LASTZD:
-          return <FmLastzd form={form} zdList={zdList} qrsz={this.qrsz} />;
+          return <FmLastzd form={form} zdList={sourceList} qrsz={this.qrsz} />;
         default:
           return <FmFyxx form={form} current={currentObject} />;
       }
@@ -368,19 +371,20 @@ class FyglMain extends PureComponent {
         </div>
 
         <Modal
-          title={`房源${CONSTS.getPageStateInfo(pageState)}`}
+          // title={`房源${CONSTS.getPageStateInfo(pageState)}`}
           // style={{ top: 20 }}
           centered
           // className={styles.standardListForm}
-          width={900}
+          // width={900}
           // bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
           maskClosable={false}
-          visible={fyDetailVisible}
+          // visible={fyDetailVisible}
           confirmLoading={loading}
-          okText="保存"
+          // okText="保存"
           onOk={this.handleSubmit}
           onCancel={this.handleCancel}
+          {...modalAttribute}
         >
           {!this.loading && status !== CONSTS.REMOTE_SUCCESS ? (
             <Alert message={msg} type="error" showIcon />
