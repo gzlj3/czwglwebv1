@@ -49,8 +49,8 @@ class FmFyxx extends PureComponent {
     const getActions = item =>
       item.sfsz === '0'
         ? [
-            <a
-              onClick={e => {
+          <a
+            onClick={e => {
                 e.preventDefault();
                 Modal.confirm({
                   title: '确认收租',
@@ -60,17 +60,17 @@ class FmFyxx extends PureComponent {
                   onOk: () => qrsz(item.housefyid),
                 });
               }}
-            >
+          >
               确认收租
-            </a>,
-            <a
-              onClick={e => {
+          </a>,
+          <a
+            onClick={e => {
                 e.preventDefault();
                 this.szdx(item);
               }}
-            >
+          >
               收租短信
-            </a>,
+          </a>,
           ]
         : null;
 
