@@ -40,15 +40,15 @@ import FmLastzd from '@/components/Forms/FmLastzd';
       status,
       msg,
       fyList,
-      currentObject, 
+      currentObject,
       buttonAction,
       sourceList,
       selectedRowKeys,
-      modalVisible,   // 显示弹框
-      modalTitle,  // 弹框属性标题
-      modalWidth,  // 弹框属性宽度
-      modalOkText,// 弹框属性确定按钮文本
-      modalOkDisabled,// 弹框属性确定按钮可点击状态
+      modalVisible, // 显示弹框
+      modalTitle, // 弹框属性标题
+      modalWidth, // 弹框属性宽度
+      modalOkText, // 弹框属性确定按钮文本
+      modalOkDisabled, // 弹框属性确定按钮可点击状态
     },
     loading,
   }) => ({
@@ -59,11 +59,11 @@ import FmLastzd from '@/components/Forms/FmLastzd';
     buttonAction,
     sourceList,
     selectedRowKeys,
-    modalVisible,   // 显示弹框
-    modalTitle,  // 弹框属性标题
-    modalWidth,  // 弹框属性宽度
-    modalOkText,// 弹框属性确定按钮文本
-    modalOkDisabled,// 弹框属性确定按钮可点击状态
+    modalVisible, // 显示弹框
+    modalTitle, // 弹框属性标题
+    modalWidth, // 弹框属性宽度
+    modalOkText, // 弹框属性确定按钮文本
+    modalOkDisabled, // 弹框属性确定按钮可点击状态
     loading: loading.models.fygl,
   })
 )
@@ -180,9 +180,9 @@ class FyglMain extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'fygl/changeState',
-      payload: { 
+      payload: {
         selectedRowKeys,
-        modalOkDisabled:selectedRowKeys.length<=0,
+        modalOkDisabled: selectedRowKeys.length <= 0,
       },
     });
   };
@@ -195,7 +195,6 @@ class FyglMain extends PureComponent {
     });
   };
 
-
   render() {
     const {
       fyList,
@@ -206,11 +205,11 @@ class FyglMain extends PureComponent {
       // sdbList,
       sourceList,
       selectedRowKeys,
-      modalVisible,   // 显示弹框
-      modalTitle,  // 弹框属性标题
-      modalWidth,  // 弹框属性宽度
-      modalOkText,// 弹框属性确定按钮文本
-      modalOkDisabled,// 弹框属性确定按钮可点击状态
+      modalVisible, // 显示弹框
+      modalTitle, // 弹框属性标题
+      modalWidth, // 弹框属性宽度
+      modalOkText, // 弹框属性确定按钮文本
+      modalOkDisabled, // 弹框属性确定按钮可点击状态
     } = this.props;
     const { form } = this.props;
     // const { fyDetailVisible, current = {} } = this.state;
@@ -270,41 +269,51 @@ class FyglMain extends PureComponent {
       }
     };
 
-    const getItemStatus = (item) => {
+    const getItemStatus = item => {
       const ysz = item.sfsz === '1';
       const currq = moment().startOf('day');
-      const szrq = moment(item.szrq,'YYYY-MM-DD');
+      const szrq = moment(item.szrq, 'YYYY-MM-DD');
       let progressState = {
-        status:'success',
-        percent:100,
+        status: 'success',
+        percent: 100,
       };
 
-      if(ysz){
-        if(currq > szrq){
-          progressState = {
-            status: 'active',
-            percent: 100,
-            strokeColor: 'blue',
-          };
-        }else {
-          const days = (31 - szrq.diff(currq,'days'));
-          const percent = Math.round(days / 31 * 100)
+      if (ysz) {
+        if (currq >= szrq) {
+          const days1 = currq.diff(szrq, 'days');
+          if (days1 === 0) {
+            progressState = {
+              status: 'success',
+              percent: 100,
+            };
+          } else {
+            const successPercent = Math.round((days1 / 5) * 100);
+            progressState = {
+              status: 'active',
+              percent: 100,
+              strokeColor: successPercent >= 100 ? 'red' : 'yellow',
+              successPercent: successPercent >= 100 ? 0 : successPercent,
+            };
+          }
+        } else {
+          const days1 = 31 - szrq.diff(currq, 'days');
+          const percent = Math.round((days1 / 31) * 100);
           progressState = {
             status: 'active',
             percent,
-            strokeColor: percent>90?'yellow':'rgb(0,200,0)',
+            strokeColor: percent > 90 ? 'yellow' : 'rgb(0,200,0)',
           };
         }
-      }else if(!ysz){
-          const days = (5 - currq.diff(szrq,'days'));
-          const percent = Math.round(days / 5 * 100)
-          progressState = {
-            status: 'active',
-            percent: 100,
-            strokeColor: percent>90?'red':'yellow',
-            successPercent: percent,
-          };
-      } 
+      } else if (!ysz) {
+        const days1 = currq.diff(szrq, 'days');
+        const successPercent = Math.round((days1 / 5) * 100);
+        progressState = {
+          status: 'active',
+          percent: 100,
+          strokeColor: successPercent < 0 || successPercent >= 100 ? 'red' : 'yellow',
+          successPercent: successPercent >= 100 ? 0 : successPercent,
+        };
+      }
       return progressState;
     };
 
@@ -429,7 +438,7 @@ class FyglMain extends PureComponent {
           okText={modalOkText}
           onOk={this.handleSubmit}
           onCancel={this.handleCancel}
-          okButtonProps={{disabled:modalOkDisabled}}
+          okButtonProps={{ disabled: modalOkDisabled }}
           // {...modalAttribute}
         >
           {/* {!this.loading && status !== CONSTS.REMOTE_SUCCESS ? (
@@ -437,9 +446,7 @@ class FyglMain extends PureComponent {
           ) : (
             ''
           )} */}
-          <Form>
-            {getCurrentForm()}
-          </Form>
+          <Form>{getCurrentForm()}</Form>
         </Modal>
       </PageHeaderWrapper>
     );
