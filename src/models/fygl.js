@@ -19,11 +19,14 @@ const initialState = {
   msg: '', // 远程处理返回信息
   fyList: [], // 房源列表数据
   currentObject: {}, // 当前form操作对象
-  // pageState: CONSTS.PAGE_LIST, // 页面状态
-  modalAttribute: { width: 1000, okText: '保存' }, // 弹框属性
   sourceList: [], // 保存列表
   selectedRowKeys: [], // 列表选中行
   buttonAction: CONSTS.BUTTON_NONE, // 当前处理按钮（动作）
+  modalVisible: false,   // 显示弹框
+  modalTitle: null,  // 弹框属性标题
+  modalWidth: 1000,  // 弹框属性宽度
+  modalOkText: '保存',// 弹框属性确定按钮文本
+  modalOkDisabled: false,// 弹框属性确定按钮可点击状态
 };
 
 function handleFyList(buttonAction, fyList, data) {
@@ -48,7 +51,7 @@ function* handleAfterRemote(response, put, select) {
   if (!response) return;
   const { status = CONSTS.REMOTE_SUCCESS, msg, data } = response;
   const { fyList, buttonAction } = yield select(state => state.fygl);
-  console.log(`buttonAction:${buttonAction}`);
+  // console.log(`buttonAction:${buttonAction}`);
 
   yield put({
     // 更新远程处理返回状态
@@ -70,7 +73,7 @@ function* handleAfterRemote(response, put, select) {
   }
 }
 
-function getRefreshState(buttonAction, response, fyglState) {
+function getRefreshState(buttonAction, response) {
   let responseData;
   if (response) {
     // 如果有远程返回值，则检查返回值状态
@@ -81,40 +84,31 @@ function getRefreshState(buttonAction, response, fyglState) {
     }
     responseData = response.data;
   }
-  const { modalAttribute } = fyglState;
   const modalVisible = ![CONSTS.BUTTON_NONE].includes(buttonAction);
-  const tempModalAttribute = {
-    ...modalAttribute,
-    title: CONSTS.getButtonActionInfo(buttonAction),
-    visible: modalVisible,
-  };
 
   let tempState = {
     buttonAction,
     sourceList: responseData,
-    modalAttribute: tempModalAttribute,
+    modalTitle: CONSTS.getButtonActionInfo(buttonAction),
+    modalVisible,
   };
 
   switch (buttonAction) {
     case CONSTS.BUTTON_LASTZD:
-      tempState.modalAttribute.okButtonProps = { disabled: true, visible: 'false' };
+      tempState = {
+        ...tempState,
+        modalOkDisabled: true,
+      };
       break;
     case CONSTS.BUTTON_MAKEZD:
       tempState = {
         ...tempState,
-        // pageState: CONSTS.PAGE_NEW,
         sourceList: responseData[0].rows,
         selectedRowKeys: responseData[0].selectedRowKeys,
+        modalOkDisabled: responseData[0].selectedRowKeys.length<=0,
       };
       break;
-    // case CONSTS.BUTTON_CB:
-    //   tempState = {
-    //     ...tempState,
-    //     // pageState: CONSTS.PAGE_NEW,
-    //   }
-    //   break;
     default:
-    // tempState={}
   }
 
   return tempState;

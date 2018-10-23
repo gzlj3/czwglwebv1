@@ -16,7 +16,6 @@ import {
   Menu,
   // Avatar,
   Modal,
-  Alert,
   Form,
   // DatePicker,
   // Select,
@@ -41,11 +40,15 @@ import FmLastzd from '@/components/Forms/FmLastzd';
       status,
       msg,
       fyList,
-      currentObject, // pageState,
-      buttonAction, // sdbList,
+      currentObject, 
+      buttonAction,
       sourceList,
       selectedRowKeys,
-      modalAttribute,
+      modalVisible,   // 显示弹框
+      modalTitle,  // 弹框属性标题
+      modalWidth,  // 弹框属性宽度
+      modalOkText,// 弹框属性确定按钮文本
+      modalOkDisabled,// 弹框属性确定按钮可点击状态
     },
     loading,
   }) => ({
@@ -53,12 +56,14 @@ import FmLastzd from '@/components/Forms/FmLastzd';
     msg,
     fyList,
     currentObject,
-    // pageState,
     buttonAction,
-    // sdbList,
     sourceList,
     selectedRowKeys,
-    modalAttribute,
+    modalVisible,   // 显示弹框
+    modalTitle,  // 弹框属性标题
+    modalWidth,  // 弹框属性宽度
+    modalOkText,// 弹框属性确定按钮文本
+    modalOkDisabled,// 弹框属性确定按钮可点击状态
     loading: loading.models.fygl,
   })
 )
@@ -175,7 +180,10 @@ class FyglMain extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'fygl/changeState',
-      payload: { selectedRowKeys },
+      payload: { 
+        selectedRowKeys,
+        modalOkDisabled:selectedRowKeys.length<=0,
+      },
     });
   };
 
@@ -187,19 +195,22 @@ class FyglMain extends PureComponent {
     });
   };
 
+
   render() {
     const {
       fyList,
       loading,
       // pageState,
       currentObject,
-      status,
-      msg,
       buttonAction,
       // sdbList,
       sourceList,
       selectedRowKeys,
-      modalAttribute,
+      modalVisible,   // 显示弹框
+      modalTitle,  // 弹框属性标题
+      modalWidth,  // 弹框属性宽度
+      modalOkText,// 弹框属性确定按钮文本
+      modalOkDisabled,// 弹框属性确定按钮可点击状态
     } = this.props;
     const { form } = this.props;
     // const { fyDetailVisible, current = {} } = this.state;
@@ -255,13 +266,47 @@ class FyglMain extends PureComponent {
         case CONSTS.BUTTON_LASTZD:
           return <FmLastzd form={form} zdList={sourceList} qrsz={this.qrsz} />;
         default:
-          return <FmFyxx form={form} current={currentObject} />;
+          return <FmFyxx form={form} current={currentObject} onZhxmChange={this.onZhxmChange} />;
       }
-      // if (buttonAction === CONSTS.BUTTON_CB) return <FmCb form={form} sdbList={sdbList} />;
-      // if (buttonAction === CONSTS.BUTTON_LASTZD) return <FmZd form={form} zdList={zdList} />;
     };
 
-    const getModalContent = () => <Form>{getCurrentForm()}</Form>;
+    const getItemStatus = (item) => {
+      const ysz = item.sfsz === '1';
+      const currq = moment().startOf('day');
+      const szrq = moment(item.szrq,'YYYY-MM-DD');
+      let progressState = {
+        status:'success',
+        percent:100,
+      };
+
+      if(ysz){
+        if(currq > szrq){
+          progressState = {
+            status: 'active',
+            percent: 100,
+            strokeColor: 'blue',
+          };
+        }else {
+          const days = (31 - szrq.diff(currq,'days'));
+          const percent = Math.round(days / 31 * 100)
+          progressState = {
+            status: 'active',
+            percent,
+            strokeColor: percent>90?'yellow':'rgb(0,200,0)',
+          };
+        }
+      }else if(!ysz){
+          const days = (5 - currq.diff(szrq,'days'));
+          const percent = Math.round(days / 5 * 100)
+          progressState = {
+            status: 'active',
+            percent: 100,
+            strokeColor: percent>90?'red':'yellow',
+            successPercent: percent,
+          };
+      } 
+      return progressState;
+    };
 
     return (
       <PageHeaderWrapper>
@@ -350,11 +395,13 @@ class FyglMain extends PureComponent {
                         <span>{`收租日期：${moment(item.szrq).format('YYYY-MM-DD')}`}</span>
                         <span>
                           <Progress
-                            percent={item.percent}
-                            status={item.status}
-                            showInfo={false}
+                            percent={getItemStatus(item).percent}
+                            status={getItemStatus(item).status}
+                            strokeColor={getItemStatus(item).strokeColor}
+                            successPercent={getItemStatus(item).successPercent}
+                            showInfo
                             strokeWidth={6}
-                            style={{ width: 120 }}
+                            style={{ width: 160 }}
                           />
                         </span>
                       </div>
@@ -369,27 +416,30 @@ class FyglMain extends PureComponent {
         </div>
 
         <Modal
-          // title={`房源${CONSTS.getPageStateInfo(pageState)}`}
+          title={modalTitle}
           // style={{ top: 20 }}
           centered
           // className={styles.standardListForm}
-          // width={900}
+          width={modalWidth}
           // bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
           maskClosable={false}
-          // visible={fyDetailVisible}
+          visible={modalVisible}
           confirmLoading={loading}
-          // okText="保存"
+          okText={modalOkText}
           onOk={this.handleSubmit}
           onCancel={this.handleCancel}
-          {...modalAttribute}
+          okButtonProps={{disabled:modalOkDisabled}}
+          // {...modalAttribute}
         >
-          {!this.loading && status !== CONSTS.REMOTE_SUCCESS ? (
+          {/* {!this.loading && status !== CONSTS.REMOTE_SUCCESS ? (
             <Alert message={msg} type="error" showIcon />
           ) : (
             ''
-          )}
-          {getModalContent()}
+          )} */}
+          <Form>
+            {getCurrentForm()}
+          </Form>
         </Modal>
       </PageHeaderWrapper>
     );

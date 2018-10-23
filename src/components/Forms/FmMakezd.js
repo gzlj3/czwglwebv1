@@ -52,7 +52,7 @@ class FmCb extends PureComponent {
     // const hasSelected = selectedRowKeys && selectedRowKeys.length > 0;
     return (
       <div>
-        <Table rowKey='houseid' rowSelection={rowSelection} columns={this.columns} dataSource={zdList} />
+        <Table pagination={false} rowKey='houseid' rowSelection={rowSelection} columns={this.columns} dataSource={zdList} />
       </div>
     );
   }
