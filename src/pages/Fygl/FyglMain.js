@@ -308,7 +308,7 @@ class FyglMain extends PureComponent {
         const days1 = currq.diff(szrq, 'days');
         const successPercent = Math.round((days1 / 5) * 100);
         progressState = {
-          status: successPercent < 0 || successPercent >= 100 ?'exception':'active',
+          status: successPercent < 0 || successPercent >= 100 ? 'exception' : 'active',
           percent: 100,
           strokeColor: successPercent < 0 || successPercent >= 100 ? 'red' : 'yellow',
           successPercent: successPercent >= 100 ? 0 : successPercent,
@@ -317,20 +317,35 @@ class FyglMain extends PureComponent {
       return progressState;
     };
 
-    const getSzzt = (item) =>{
+    const getSzzt = item => {
       let tsinfo;
-      if(!item.rq1){
-        tsinfo =<div style={{width:'100%',textAlign:'center',fontSize:16}}><div style={{color:'blue',fontSize:18,padding:'8px'}}>新签约</div><div>&nbsp;</div></div>
-      }else{
+      if (!item.rq1) {
+        tsinfo = (
+          <div style={{ width: '100%', textAlign: 'center', fontSize: 16 }}>
+            <div style={{ color: 'blue', fontSize: 18, padding: '8px' }}>新签约</div>
+            <div>&nbsp;</div>
+          </div>
+        );
+      } else {
         const zdfy = <div>{`${moment(item.rq1).format('YYYY年MM月')}帐单：${item.fyhj}元`}</div>;
-        if(item.sfsz === '1'){
-          tsinfo =<div style={{width:'100%',textAlign:'center',fontSize:16}}>{zdfy}<div style={{fontSize:18,padding:'8px'}}>已结清</div></div>
-        }else{
-          tsinfo =<div style={{width:'100%',textAlign:'center',fontSize:16}}>{zdfy}<div style={{color:'red',fontSize:18,padding:'8px'}}>未结清</div></div>
-        } 
+        if (item.sfsz === '1') {
+          tsinfo = (
+            <div style={{ width: '100%', textAlign: 'center', fontSize: 16 }}>
+              {zdfy}
+              <div style={{ fontSize: 18, padding: '8px' }}>已结清</div>
+            </div>
+          );
+        } else {
+          tsinfo = (
+            <div style={{ width: '100%', textAlign: 'center', fontSize: 16 }}>
+              {zdfy}
+              <div style={{ color: 'red', fontSize: 18, padding: '8px' }}>未结清</div>
+            </div>
+          );
+        }
       }
       return tsinfo;
-    }
+    };
 
     return (
       <PageHeaderWrapper>
@@ -346,7 +361,7 @@ class FyglMain extends PureComponent {
             <Button
               type="primary"
               style={{ marginBottom: 8 }}
-              icon="plus"
+              // icon="plus"
               onClick={this.addFy}
               ref={component => {
                 /* eslint-disable */
@@ -358,7 +373,7 @@ class FyglMain extends PureComponent {
             </Button>
             <Button
               type="primary"
-              style={{ marginBottom: 8, marginLeft: 8 }}
+              style={{ marginBottom: 8, marginLeft: 4 }}
               // icon="plus"
               onClick={this.cb}
               ref={component => {
@@ -371,7 +386,7 @@ class FyglMain extends PureComponent {
             </Button>
             <Button
               type="primary"
-              style={{ marginBottom: 8, marginLeft: 8 }}
+              style={{ marginBottom: 8, marginLeft: 4 }}
               // icon="plus"
               onClick={this.makezd}
               ref={component => {
@@ -427,7 +442,7 @@ class FyglMain extends PureComponent {
                             successPercent={getItemStatus(item).successPercent}
                             showInfo
                             strokeWidth={6}
-                            style={{ width: '100%'}}
+                            style={{ width: '100%' }}
                           />
                         </span>
                       </div>
