@@ -11,7 +11,7 @@ import { enquireScreen, unenquireScreen } from 'enquire-js';
 import { formatMessage } from 'umi/locale';
 import SiderMenu from '@/components/SiderMenu';
 import Authorized from '@/utils/Authorized';
-import SettingDrawer from '@/components/SettingDrawer';
+// import SettingDrawer from '@/components/SettingDrawer';
 import logo from '../assets/logo.svg';
 import Footer from './Footer';
 import Header from './Header';
@@ -81,7 +81,7 @@ class BasicLayout extends React.PureComponent {
   }
 
   state = {
-    rendering: true,
+    // rendering: true,
     isMobile: false,
   };
 
@@ -95,7 +95,7 @@ class BasicLayout extends React.PureComponent {
     });
     this.renderRef = requestAnimationFrame(() => {
       this.setState({
-        rendering: false,
+        // rendering: false,
       });
     });
     this.enquireHandler = enquireScreen(mobile => {
@@ -169,13 +169,13 @@ class BasicLayout extends React.PureComponent {
     const currRouterData = this.matchParamsPath(pathname);
 
     if (!currRouterData) {
-      return 'Ant Design Pro';
+      return '极简出租';
     }
     const message = formatMessage({
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name,
     });
-    return `${message} - Ant Design Pro`;
+    return `${message} - 极简出租`;
   };
 
   getLayoutStyle = () => {
@@ -208,11 +208,14 @@ class BasicLayout extends React.PureComponent {
   renderSettingDrawer() {
     // Do not render SettingDrawer in production
     // unless it is deployed in preview.pro.ant.design as demo
-    const { rendering } = this.state;
-    if ((rendering || process.env.NODE_ENV === 'production') && APP_TYPE !== 'site') {
-      return null;
-    }
-    return <SettingDrawer />;
+    // const { rendering } = this.state;
+    if (this.state) return null;
+    return null;
+    // const { rendering } = this.state;
+    // if ((rendering || process.env.NODE_ENV === 'production') && APP_TYPE !== 'site') {
+    //   return null;
+    // }
+    // return <SettingDrawer />;
   }
 
   render() {

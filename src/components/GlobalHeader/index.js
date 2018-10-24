@@ -3,7 +3,7 @@ import { Icon } from 'antd';
 import Link from 'umi/link';
 import Debounce from 'lodash-decorators/debounce';
 import styles from './index.less';
-import RightContent from './RightContent';
+// import RightContent from './RightContent';
 
 export default class GlobalHeader extends PureComponent {
   componentWillUnmount() {
@@ -37,7 +37,7 @@ export default class GlobalHeader extends PureComponent {
           onClick={this.toggle}
         />
 
-        <RightContent {...this.props} />
+        {/* <RightContent {...this.props} /> */}
       </div>
     );
   }
