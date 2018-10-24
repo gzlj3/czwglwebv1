@@ -93,19 +93,32 @@ function getRefreshState(buttonAction, response) {
     modalVisible,
   };
 
+  let tsinfo='';
   switch (buttonAction) {
     case CONSTS.BUTTON_LASTZD:
+      if(responseData && responseData.length>0 && responseData[0].sfsz==='1'){
+        tsinfo = '(在【创建帐单】功能中创建新帐单)';
+      }
       tempState = {
         ...tempState,
+        modalTitle: `查看/处理帐单${tsinfo}`,
         modalOkDisabled: true,
       };
       break;
     case CONSTS.BUTTON_MAKEZD:
       tempState = {
         ...tempState,
+        modalTitle: `上月帐单已结清且不小于收租日期的房源可创建新帐单`,
         sourceList: responseData[0].rows,
         selectedRowKeys: responseData[0].selectedRowKeys,
         modalOkDisabled: responseData[0].selectedRowKeys.length<=0,
+      };
+      break;
+    case CONSTS.BUTTON_CB:
+      tempState = {
+        ...tempState,
+        modalTitle: `上月帐单已结清且接近收租日期的房源可抄表`,
+        modalOkDisabled: !responseData || responseData.length<=0,
       };
       break;
     default:

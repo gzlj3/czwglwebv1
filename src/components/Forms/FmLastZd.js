@@ -74,6 +74,11 @@ class FmFyxx extends PureComponent {
           ]
         : null;
 
+    const getSzzt = (sfsz) =>{
+      if(sfsz === '1') return <span style={{marginLeft:20}}>已结清</span>
+      return <span style={{marginLeft:20,color:'red'}}>未结清</span>
+    }
+
     return (
       <div>
         <List
@@ -90,9 +95,8 @@ class FmFyxx extends PureComponent {
                   <span style={{ fontSize: 16 }}>
                     <span>{`${item.fwmc}  ${item.zhxm}`}</span>
                     <span style={{ marginLeft: 30 }}>
-                      {`${moment(item.rq1).format('YYYY年MM月')}费用：${item.fyhj}元
-                        ${item.sfsz === '1' ? ',已结清' : ''}
-                      `}
+                      {`${moment(item.rq1).format('YYYY年MM月')}费用：${item.fyhj}元`}
+                      {getSzzt(item.sfsz)}
                     </span>
                   </span>
                 }

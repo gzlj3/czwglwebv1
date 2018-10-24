@@ -281,7 +281,7 @@ class FyglMain extends PureComponent {
       if (ysz) {
         if (currq >= szrq) {
           const days1 = currq.diff(szrq, 'days');
-          if (days1 === 0) {
+          if (days1 === 0 && item.rq1) {
             progressState = {
               status: 'success',
               percent: 100,
@@ -301,14 +301,14 @@ class FyglMain extends PureComponent {
           progressState = {
             status: 'active',
             percent,
-            strokeColor: percent > 90 ? 'yellow' : 'rgb(0,200,0)',
+            strokeColor: percent >= 90 ? 'yellow' : 'rgb(0,200,0)',
           };
         }
       } else if (!ysz) {
         const days1 = currq.diff(szrq, 'days');
         const successPercent = Math.round((days1 / 5) * 100);
         progressState = {
-          status: 'active',
+          status: successPercent < 0 || successPercent >= 100 ?'exception':'active',
           percent: 100,
           strokeColor: successPercent < 0 || successPercent >= 100 ? 'red' : 'yellow',
           successPercent: successPercent >= 100 ? 0 : successPercent,
@@ -317,6 +317,21 @@ class FyglMain extends PureComponent {
       return progressState;
     };
 
+    const getSzzt = (item) =>{
+      let tsinfo;
+      if(!item.rq1){
+        tsinfo =<div style={{width:'100%',textAlign:'center',fontSize:16}}><div style={{color:'blue',fontSize:18,padding:'8px'}}>新签约</div><div>&nbsp;</div></div>
+      }else{
+        const zdfy = <div>{`${moment(item.rq1).format('YYYY年MM月')}帐单：${item.fyhj}元`}</div>;
+        if(item.sfsz === '1'){
+          tsinfo =<div style={{width:'100%',textAlign:'center',fontSize:16}}>{zdfy}<div style={{fontSize:18,padding:'8px'}}>已结清</div></div>
+        }else{
+          tsinfo =<div style={{width:'100%',textAlign:'center',fontSize:16}}>{zdfy}<div style={{color:'red',fontSize:18,padding:'8px'}}>未结清</div></div>
+        } 
+      }
+      return tsinfo;
+    }
+
     return (
       <PageHeaderWrapper>
         <div className={styles.standardList}>
@@ -324,8 +339,8 @@ class FyglMain extends PureComponent {
             className={styles.listCard}
             bordered
             // title="标准列表"
-            style={{ marginTop: 24 }}
-            bodyStyle={{ padding: '0 32px 40px 32px' }}
+            // style={{ marginTop: 0 }}
+            // bodyStyle={{ padding: '12px 32px 40px 32px' }}
             // extra={extraContent}
           >
             <Button
@@ -377,8 +392,9 @@ class FyglMain extends PureComponent {
               renderItem={item => (
                 <List.Item>
                   <Card
+                    className={styles.listCard}
                     title={`${item.fwmc}  ${item.zhxm ? item.zhxm : '（未出租）'}`}
-                    extra={<a href={item.href}>更多</a>}
+                    // extra={<a href={item.href}>更多</a>}
                     actions={[
                       <a
                         onClick={e => {
@@ -399,8 +415,9 @@ class FyglMain extends PureComponent {
                       <MoreBtn currentItem={item} />,
                     ]}
                   >
-                    {item.szrq ? (
+                    {item.zhxm ? (
                       <div>
+                        {getSzzt(item)}
                         <span>{`收租日期：${moment(item.szrq).format('YYYY-MM-DD')}`}</span>
                         <span>
                           <Progress
@@ -410,7 +427,7 @@ class FyglMain extends PureComponent {
                             successPercent={getItemStatus(item).successPercent}
                             showInfo
                             strokeWidth={6}
-                            style={{ width: 160 }}
+                            style={{ width: '100%'}}
                           />
                         </span>
                       </div>

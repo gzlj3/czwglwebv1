@@ -1,0 +1,11 @@
+{
+  "button": [
+      {
+          "type": "view", 
+          "name": "进入出租屋管理系统", 
+          "key": "CZWGLXT", 
+          "url": "http://ht2mje.natappfree.cc"
+      }
+  ]
+}
+

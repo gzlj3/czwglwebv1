@@ -53,7 +53,7 @@ class FmCb extends PureComponent {
                     <InputNumber
                       min={0}
                       step={10}
-                      placeholder={item.sscds}
+                      placeholder={`上次:${item.sscds}`}
                       style={{ width: '100%' }}
                     />
                   )}
@@ -65,7 +65,7 @@ class FmCb extends PureComponent {
                     <InputNumber
                       min={0}
                       step={10}
-                      placeholder={item.dscds}
+                      placeholder={`上次:${item.dscds}`}
                       style={{ width: '100%' }}
                     />
                   )}

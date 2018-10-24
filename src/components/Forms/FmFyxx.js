@@ -76,6 +76,9 @@ class FmFyxx extends PureComponent {
         {getFieldDecorator('sfsz', {initialValue: current.sfsz,})(<Input type="hidden" />)}
         {getFieldDecorator('dbcds', {initialValue: current.dbcds})(<Input type="hidden" />)}
         {getFieldDecorator('sbcds', {initialValue: current.sbcds})(<Input type="hidden" />)}
+        {getFieldDecorator('rq1', {initialValue: current.rq1})(<Input type="hidden" />)}
+        {getFieldDecorator('rq2', {initialValue: current.rq2})(<Input type="hidden" />)}
+        {getFieldDecorator('fyhj', {initialValue: current.fyhj})(<Input type="hidden" />)}
         <Row>
           <Col {...this.colLayout}>
             <FormItem label="房屋名称" {...this.formLayout}>
