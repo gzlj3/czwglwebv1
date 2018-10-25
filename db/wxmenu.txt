@@ -2,9 +2,9 @@
   "button": [
       {
           "type": "view", 
-          "name": "进入出租屋管理系统", 
+          "name": "进入极简出租", 
           "key": "CZWGLXT", 
-          "url": "http://ht2mje.natappfree.cc"
+          "url": "http://ij5vah.natappfree.cc"
       }
   ]
 }

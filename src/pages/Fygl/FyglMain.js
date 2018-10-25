@@ -187,11 +187,11 @@ class FyglMain extends PureComponent {
     });
   };
 
-  qrsz = housefyid => {
+  qrsz = (housefyid,flag) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'fygl/qrsz',
-      payload: { housefyid },
+      payload: { housefyid,flag },
     });
   };
 
@@ -270,7 +270,7 @@ class FyglMain extends PureComponent {
     };
 
     const getItemStatus = item => {
-      const ysz = item.sfsz === '1';
+      const ysz = item.sfsz !== '0';
       const currq = moment().startOf('day');
       const szrq = moment(item.szrq, 'YYYY-MM-DD');
       let progressState = {
@@ -283,7 +283,7 @@ class FyglMain extends PureComponent {
           const days1 = currq.diff(szrq, 'days');
           if (days1 === 0 && item.rq1) {
             progressState = {
-              status: 'success',
+              status: 'active',
               percent: 100,
             };
           } else {
@@ -328,11 +328,11 @@ class FyglMain extends PureComponent {
         );
       } else {
         const zdfy = <div>{`${moment(item.rq1).format('YYYY年MM月')}帐单：${item.fyhj}元`}</div>;
-        if (item.sfsz === '1') {
+        if (item.sfsz === '1' || item.sfsz === '2') {
           tsinfo = (
             <div style={{ width: '100%', textAlign: 'center', fontSize: 16 }}>
               {zdfy}
-              <div style={{ fontSize: 18, padding: '8px' }}>已结清</div>
+              <div style={{ fontSize: 18, padding: '8px' }}>{item.sfsz==='1'?'已结清':'已结转'}</div>
             </div>
           );
         } else {

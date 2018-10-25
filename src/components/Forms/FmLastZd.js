@@ -6,8 +6,8 @@ import {
   Input,
   // Form,
   Card,
-  Row,
-  Col,
+  // Row,
+  // Col,
   message,
 } from 'antd';
 
@@ -64,13 +64,13 @@ class FmFyxx extends PureComponent {
     const { zdList, qrsz } = this.props;
     // const { szdxButton } = this.state;
     const curs = this.state;
-    const showfy = (fym, fy) => (fy ? `${fym}：${fy}` : '');
-    const colLayout = {
-      sm: 24,
-      md: 12,
-      lg: 8,
-      xxl: 8,
-    };
+    const showfy = (fym, fy) => (fy ? <div>{`${fym}：${fy}元`}<br /></div>:'');
+    // const colLayout = {
+    //   sm: 24,
+    //   md: 12,
+    //   lg: 8,
+    //   xxl: 8,
+    // };
 
     const getActions = (item,i) =>
       item.sfsz === '0'
@@ -83,11 +83,25 @@ class FmFyxx extends PureComponent {
                   content: `确定该房源(${item.fwmc})已经收租了吗？`,
                   okText: '确认',
                   cancelText: '取消',
-                  onOk: () => qrsz(item.housefyid),
+                  onOk: () => qrsz(item.housefyid,'qrsz'),
                 });
               }}
           >
               确认收租
+          </a>,
+          <a
+            onClick={e => {
+                e.preventDefault();
+                Modal.confirm({
+                  title: '结转帐单',
+                  content: `确定将该房源(${item.fwmc})帐单(${item.fyhj}元)结转到下月吗？`,
+                  okText: '确认',
+                  cancelText: '取消',
+                  onOk: () => qrsz(item.housefyid,'jzzd'),
+                });
+              }}
+          >
+            结转帐单
           </a>,
           <a
             onClick={e => {
@@ -102,6 +116,7 @@ class FmFyxx extends PureComponent {
 
     const getSzzt = (sfsz) =>{
       if(sfsz === '1') return <span style={{marginLeft:20}}>已结清</span>
+      if(sfsz === '2') return <span style={{marginLeft:20}}>已结转</span>
       return <span style={{marginLeft:20,color:'red'}}>未结清</span>
     }
 
@@ -135,23 +150,29 @@ class FmFyxx extends PureComponent {
                   <span>
                     {`电费：${item.dfhj}元(上次:${item.dscds},本次:${item.dbcds},实用:${
                       item.dsyds
-                    },公摊:${item.dgtds?item.dgtds:0},单价:${item.ddj})`}
+                    },公摊:${item.dgtds?item.dgtds:0},单价:${item.ddj}元)`}
                   </span>
                   <br />
                   <span>
                     {`水费：${item.sfhj}元(上次:${item.sscds},本次:${item.sbcds},实用:${
                       item.ssyds
-                    },公摊:${item.sgtds?item.sgtds:0},单价:${item.sdj})`}
+                    },公摊:${item.sgtds?item.sgtds:0},单价:${item.sdj}元)`}
                   </span>
                   <br />
-                  <Row>
+                  {showfy('月租费', item.czje)}
+                  {showfy('网络费', item.wlf)}
+                  {showfy('卫生费', item.ljf)}
+                  {showfy('管理费', item.glf)}
+                  {showfy('上月结转费', item.syjzf)}
+                  {showfy('其它费', item.qtf)}
+                  {/* <Row>
                     <Col {...colLayout}>{showfy('月租费', item.czje)}</Col>
                     <Col {...colLayout}>{showfy('网络费', item.wlf)}</Col>
-                    <Col {...colLayout}>{showfy('管理费', item.glf)}</Col>
                     <Col {...colLayout}>{showfy('卫生费', item.ljf)}</Col>
+                    <Col {...colLayout}>{showfy('管理费', item.glf)}</Col>
                     <Col {...colLayout}>{showfy('上月结转费', item.syjzf)}</Col>
                     <Col {...colLayout}>{showfy('其它费', item.qtf)}</Col>
-                  </Row>
+                  </Row> */}
                 </div>
                 <Input.TextArea id={`szdxText_${i}`} rows='6' readOnly style={{display:`${curs[i]?'':'none'}`}} />
               </Card>
