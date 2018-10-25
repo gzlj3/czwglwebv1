@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 // import moment from 'moment';
-import { Table, } from 'antd';
-
+import { Table } from 'antd';
 
 class FmCb extends PureComponent {
   formLayout = {
@@ -20,19 +19,30 @@ class FmCb extends PureComponent {
     // validateTrigger: 'onBlur',
   };
 
-  columns = [{
-    title: '房屋名称',
-    dataIndex: 'fwmc',
-  }, {
-    title: '租户姓名',
-    dataIndex: 'zhxm',
-  }, {
-    title: '帐单费用',
-    dataIndex: 'qtf',
-  }, {
-    title: '状态',
-    dataIndex: 'bz',
-  }];
+  columns = [
+    {
+      title: '房屋',
+      dataIndex: 'fwmc',
+      render: (_, record) => (
+        <span>
+          {record.fwmc}
+          {record.qtf ? `,帐单:${record.qtf}元` : ''}
+          {record.bz}
+        </span>
+      ),
+    },
+    // {
+    //   title: '租户姓名',
+    //   dataIndex: 'zhxm',
+    // },
+    // {
+    //   title: '帐单',
+    //   dataIndex: 'qtf',
+    // }, {
+    //   title: '状态',
+    //   dataIndex: 'bz',
+    // }
+  ];
 
   render() {
     const {
@@ -45,14 +55,20 @@ class FmCb extends PureComponent {
       selectedRowKeys,
       onChange: onMakezdSelectChange,
       getCheckboxProps: record => ({
-        disabled: record.bz !== null, 
+        disabled: record.bz !== null,
         name: record.fwmc,
-      }),      
-    };    
+      }),
+    };
     // const hasSelected = selectedRowKeys && selectedRowKeys.length > 0;
     return (
       <div>
-        <Table pagination={false} rowKey='houseid' rowSelection={rowSelection} columns={this.columns} dataSource={zdList} />
+        <Table
+          pagination={false}
+          rowKey="houseid"
+          rowSelection={rowSelection}
+          columns={this.columns}
+          dataSource={zdList}
+        />
       </div>
     );
   }

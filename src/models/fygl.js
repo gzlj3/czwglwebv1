@@ -22,11 +22,11 @@ const initialState = {
   sourceList: [], // 保存列表
   selectedRowKeys: [], // 列表选中行
   buttonAction: CONSTS.BUTTON_NONE, // 当前处理按钮（动作）
-  modalVisible: false,   // 显示弹框
-  modalTitle: null,  // 弹框属性标题
-  modalWidth: 1000,  // 弹框属性宽度
-  modalOkText: '保存',// 弹框属性确定按钮文本
-  modalOkDisabled: false,// 弹框属性确定按钮可点击状态
+  modalVisible: false, // 显示弹框
+  modalTitle: null, // 弹框属性标题
+  modalWidth: 1000, // 弹框属性宽度
+  modalOkText: '保存', // 弹框属性确定按钮文本
+  modalOkDisabled: false, // 弹框属性确定按钮可点击状态
 };
 
 function handleFyList(buttonAction, fyList, data) {
@@ -93,32 +93,33 @@ function getRefreshState(buttonAction, response) {
     modalVisible,
   };
 
-  let tsinfo='';
+  // let tsinfo='';
   switch (buttonAction) {
     case CONSTS.BUTTON_LASTZD:
-      if(responseData && responseData.length>0 && responseData[0].sfsz==='1'){
-        tsinfo = '(在【创建帐单】功能中创建新帐单)';
-      }
+      // if(responseData && responseData.length>0 && responseData[0].sfsz==='1'){
+      //   tsinfo = '(在【创建帐单】功能中创建新帐单)';
+      // }
       tempState = {
         ...tempState,
-        modalTitle: `查看/处理帐单${tsinfo}`,
+        // modalTitle: `查看/处理帐单${tsinfo}`,
         modalOkDisabled: true,
       };
       break;
     case CONSTS.BUTTON_MAKEZD:
       tempState = {
         ...tempState,
-        modalTitle: `上月帐单已结清且不小于收租日期的房源可创建新帐单`,
+        // modalTitle: `上月帐单已结清且不小于收租日期的房源可创建新帐单`,
+        modalWidth: 300,
         sourceList: responseData[0].rows,
         selectedRowKeys: responseData[0].selectedRowKeys,
-        modalOkDisabled: responseData[0].selectedRowKeys.length<=0,
+        modalOkDisabled: responseData[0].selectedRowKeys.length <= 0,
       };
       break;
     case CONSTS.BUTTON_CB:
       tempState = {
         ...tempState,
-        modalTitle: `上月帐单已结清且接近收租日期的房源可抄表`,
-        modalOkDisabled: !responseData || responseData.length<=0,
+        // modalTitle: `上月帐单已结清且接近收租日期的房源可抄表`,
+        modalOkDisabled: !responseData || responseData.length <= 0,
       };
       break;
     default:
