@@ -34,9 +34,9 @@ class FmFyxx extends PureComponent {
     // validateTrigger: 'onBlur',
   };
 
-  makeSzdx = (currnetIndex)=>{
+  makeSzdx = currnetIndex => {
     // const {currnetIndex} = this.state;
-    if(currnetIndex>=0){
+    if (currnetIndex >= 0) {
       const { zdList } = this.props;
       const zdxx = document.getElementById(`zdxxDiv_${currnetIndex}`);
       const szdxText = document.getElementById(`szdxText_${currnetIndex}`);
@@ -46,15 +46,18 @@ class FmFyxx extends PureComponent {
       document.execCommand('Copy');
       message.info('收租短信已成功复制到系统粘贴板！');
     }
-  }
+  };
 
-  szdx = (i) => {
-    this.setState((preState)=>({
-      // currnetIndex:i,
-      [i]:!preState[i]
-    }),()=>{
-      this.makeSzdx(i);
-    });
+  szdx = i => {
+    this.setState(
+      preState => ({
+        // currnetIndex:i,
+        [i]: !preState[i],
+      }),
+      () => {
+        this.makeSzdx(i);
+      }
+    );
   };
 
   render() {
@@ -64,7 +67,15 @@ class FmFyxx extends PureComponent {
     const { zdList, qrsz } = this.props;
     // const { szdxButton } = this.state;
     const curs = this.state;
-    const showfy = (fym, fy) => (fy ? <div>{`${fym}：${fy}元`}<br /></div>:'');
+    const showfy = (fym, fy) =>
+      fy ? (
+        <div>
+          {`${fym}：${fy}元`}
+          <br />
+        </div>
+      ) : (
+        ''
+      );
     // const colLayout = {
     //   sm: 24,
     //   md: 12,
@@ -72,53 +83,71 @@ class FmFyxx extends PureComponent {
     //   xxl: 8,
     // };
 
-    const getActions = (item,i) =>
+    const getActions = (item, i) =>
       item.sfsz === '0'
         ? [
-          <a
-            onClick={e => {
+            <a
+              onClick={e => {
                 e.preventDefault();
                 Modal.confirm({
                   title: '确认收租',
                   content: `确定该房源(${item.fwmc})已经收租了吗？`,
                   okText: '确认',
                   cancelText: '取消',
-                  onOk: () => qrsz(item.housefyid,'qrsz'),
+                  onOk: () => qrsz(item.housefyid, 'qrsz'),
                 });
               }}
-          >
+            >
               确认收租
-          </a>,
-          <a
-            onClick={e => {
+            </a>,
+            <a
+              onClick={e => {
                 e.preventDefault();
                 Modal.confirm({
                   title: '结转帐单',
                   content: `确定将该房源(${item.fwmc})帐单(${item.fyhj}元)结转到下月吗？`,
                   okText: '确认',
                   cancelText: '取消',
-                  onOk: () => qrsz(item.housefyid,'jzzd'),
+                  onOk: () => qrsz(item.housefyid, 'jzzd'),
                 });
               }}
-          >
-            结转帐单
-          </a>,
-          <a
-            onClick={e => {
+            >
+              结转帐单
+            </a>,
+            <a
+              onClick={e => {
                 e.preventDefault();
                 this.szdx(i);
               }}
-          >
+            >
               收租短信
-          </a>,
+            </a>,
           ]
         : null;
 
-    const getSzzt = (sfsz) =>{
-      if(sfsz === '1') return <span style={{marginLeft:20}}>已结清</span>
-      if(sfsz === '2') return <span style={{marginLeft:20}}>已结转</span>
-      return <span style={{marginLeft:20,color:'red'}}>未结清</span>
-    }
+    const getExtra = item =>
+      item.sfsz === '0' ? (
+        <a
+          onClick={e => {
+            e.preventDefault();
+            Modal.confirm({
+              title: '刷新帐单',
+              content: `确定刷新该房源(${item.fwmc})的帐单数据吗？`,
+              okText: '确认',
+              cancelText: '取消',
+              onOk: () => qrsz(item.housefyid, 'sxzd'),
+            });
+          }}
+        >
+          刷新帐单
+        </a>
+      ) : null;
+
+    const getSzzt = sfsz => {
+      if (sfsz === '1') return <span style={{ marginLeft: 20 }}>已结清</span>;
+      if (sfsz === '2') return <span style={{ marginLeft: 20 }}>已结转下月</span>;
+      return <span style={{ marginLeft: 20, color: 'red' }}>未结清</span>;
+    };
 
     return (
       <div>
@@ -129,37 +158,51 @@ class FmFyxx extends PureComponent {
           // loading={loading}
           pagination={false}
           dataSource={zdList}
-          renderItem={(item,i) => (
+          renderItem={(item, i) => (
             <List.Item>
               <Card
                 title={
                   <span style={{ fontSize: 16 }}>
                     <span>{`${item.fwmc}  ${item.zhxm}`}</span>
-                    <span style={{ marginLeft: 20 }}>
-                      {getSzzt(item.sfsz)}
-                    </span>
+                    <span style={{ marginLeft: 5 }}>{getSzzt(item.sfsz)}</span>
                   </span>
                 }
-                actions={getActions(item,i)}
+                extra={getExtra(item, i)}
+                actions={getActions(item, i)}
               >
                 <span style={{ marginLeft: 0 }}>{`时段：${item.rq1}--${item.rq2}`}</span>
                 <br />
-                <div id={`zdxxDiv_${i}`} style={{display:`${curs[i]?'none':''}`}}>
-                  <span style={{ fontSize: 16,color:'blue'}}>{`${moment(item.rq1).format('YYYY年MM月')}应缴费用：${item.fyhj}元`}</span>
+                <div id={`zdxxDiv_${i}`} style={{ display: `${curs[i] ? 'none' : ''}` }}>
+                  <span style={{ fontSize: 16, color: 'blue' }}>{`${moment(item.rq1).format(
+                    'YYYY年MM月'
+                  )}应缴费用：${item.fyhj}元`}</span>
                   <br />
-                  <span>
-                    {`电费：${item.dfhj}元(上次:${item.dscds},本次:${item.dbcds},实用:${
-                      item.dsyds
-                    },公摊:${item.dgtds?item.dgtds:0},单价:${item.ddj}元)`}
-                  </span>
-                  <br />
-                  <span>
-                    {`水费：${item.sfhj}元(上次:${item.sscds},本次:${item.sbcds},实用:${
-                      item.ssyds
-                    },公摊:${item.sgtds?item.sgtds:0},单价:${item.sdj}元)`}
-                  </span>
-                  <br />
+                  {item.dfhj ? (
+                    <div>
+                      <span>
+                        {`电费：${item.dfhj}元(上次:${item.dscds},本次:${item.dbcds},实用:${
+                          item.dsyds
+                        },公摊:${item.dgtds ? item.dgtds : 0},单价:${item.ddj}元)`}
+                      </span>
+                      <br />
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                  {item.sfhj ? (
+                    <div>
+                      <span>
+                        {`水费：${item.sfhj}元(上次:${item.sscds},本次:${item.sbcds},实用:${
+                          item.ssyds
+                        },公摊:${item.sgtds ? item.sgtds : 0},单价:${item.sdj}元)`}
+                      </span>
+                      <br />
+                    </div>
+                  ) : (
+                    ''
+                  )}
                   {showfy('月租费', item.czje)}
+                  {showfy('押  金', item.yj)}
                   {showfy('网络费', item.wlf)}
                   {showfy('卫生费', item.ljf)}
                   {showfy('管理费', item.glf)}
@@ -174,7 +217,12 @@ class FmFyxx extends PureComponent {
                     <Col {...colLayout}>{showfy('其它费', item.qtf)}</Col>
                   </Row> */}
                 </div>
-                <Input.TextArea id={`szdxText_${i}`} rows='6' readOnly style={{display:`${curs[i]?'':'none'}`}} />
+                <Input.TextArea
+                  id={`szdxText_${i}`}
+                  rows="6"
+                  readOnly
+                  style={{ display: `${curs[i] ? '' : 'none'}` }}
+                />
               </Card>
             </List.Item>
           )}

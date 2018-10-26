@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { Input, InputNumber, Form, DatePicker, Row, Col,Divider } from 'antd';
+import { Input, InputNumber, Form, DatePicker, Row, Col, Divider } from 'antd';
 
 const FormItem = Form.Item;
 
 class FmFyxx extends PureComponent {
   state = {
-    qyzt: false,  // 签约状态，zhxm不为空，则表示处理签约状态
+    qyzt: false, // 签约状态，zhxm不为空，则表示处理签约状态
   };
- 
+
   formLayout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 13 },
@@ -27,58 +27,69 @@ class FmFyxx extends PureComponent {
 
   componentDidMount() {
     const { current } = this.props;
-    if(current && current.zhxm){
-      this.onZhxmChange({target:{value:current.zhxm}});
+    if (current && current.zhxm) {
+      this.onZhxmChange({ target: { value: current.zhxm } });
     }
   }
 
-  onZhxmChange = (e)=>{
-    const qyzt = e.target.value !== null && e.target.value.length>0;
+  onZhxmChange = e => {
+    const qyzt = e.target.value !== null && e.target.value.length > 0;
     // console.log(qyzt);
-    this.setState({
-      qyzt,
-    }, () => {
-      const {form} = this.props;
-      if(!qyzt)
-        form.validateFields(['dhhm','czje','htrqq','htrqz','dqsds','sqsds','ddj','sdj','szrq'], { force: true });
-    });
+    this.setState(
+      {
+        qyzt,
+      },
+      () => {
+        const { form } = this.props;
+        if (!qyzt)
+          form.validateFields(
+            ['dhhm', 'czje', 'htrqq', 'htrqz', 'dqsds', 'sqsds', 'ddj', 'sdj', 'szrq'],
+            { force: true }
+          );
+      }
+    );
   };
 
-  onHtrqqChange = (date)=>{
-    const {form} = this.props;
+  onHtrqqChange = date => {
+    const { form } = this.props;
     const szrq = form.getFieldValue('szrq');
-    if(szrq === null){
+    if (szrq === null) {
       // 根据合同日期起自动生成下次收租日期,加1月
       const htrqq = date.clone();
-      form.setFieldsValue({'szrq':htrqq.add(1,'months')});
+      form.setFieldsValue({ szrq: htrqq.add(1, 'months') });
     }
     const htrqz = form.getFieldValue('htrqz');
-    if(htrqz === null){
+    if (htrqz === null) {
       // 根据合同日期起自动生成下次收租日期，加1年
       const htrqq = date.clone();
-      form.setFieldsValue({'htrqz':htrqq.add(1,'years')});
+      form.setFieldsValue({ htrqz: htrqq.add(1, 'years') });
     }
-  }
-
+  };
 
   render() {
     const {
       form: { getFieldDecorator },
     } = this.props;
     const { current } = this.props;
-    const {qyzt} = this.state;
+    const { qyzt } = this.state;
 
     return (
       <div>
         {/* 隐藏字段，避免在编辑时清空这些字段 */}
-        {getFieldDecorator('houseid', {initialValue: current.houseid,})(<Input type="hidden" />)}
-        {getFieldDecorator('yzhid', {initialValue: current.yzhid,})(<Input type="hidden" />)}
-        {getFieldDecorator('sfsz', {initialValue: current.sfsz,})(<Input type="hidden" />)}
-        {getFieldDecorator('dbcds', {initialValue: current.dbcds})(<Input type="hidden" />)}
-        {getFieldDecorator('sbcds', {initialValue: current.sbcds})(<Input type="hidden" />)}
-        {getFieldDecorator('rq1', {initialValue: current.rq1})(<Input type="hidden" />)}
-        {getFieldDecorator('rq2', {initialValue: current.rq2})(<Input type="hidden" />)}
-        {getFieldDecorator('fyhj', {initialValue: current.fyhj})(<Input type="hidden" />)}
+        {getFieldDecorator('houseid', { initialValue: current.houseid })(<Input type="hidden" />)}
+        {getFieldDecorator('yzhid', { initialValue: current.yzhid })(<Input type="hidden" />)}
+        {getFieldDecorator('sfsz', { initialValue: current.sfsz })(<Input type="hidden" />)}
+        {/* {getFieldDecorator('dbcds', {initialValue: current.dbcds})(<Input type="hidden" />)}
+        {getFieldDecorator('sbcds', {initialValue: current.sbcds})(<Input type="hidden" />)} */}
+        {getFieldDecorator('rq1', { initialValue: current.rq1 })(<Input type="hidden" />)}
+        {getFieldDecorator('rq2', { initialValue: current.rq2 })(<Input type="hidden" />)}
+        {getFieldDecorator('fyhj', { initialValue: current.fyhj })(<Input type="hidden" />)}
+        {getFieldDecorator('zdlx', { initialValue: current.zdlx })(<Input type="hidden" />)}
+        {getFieldDecorator('housefyid', { initialValue: current.housefyid })(
+          <Input type="hidden" />
+        )}
+        {getFieldDecorator('lrr', { initialValue: current.lrr })(<Input type="hidden" />)}
+        {getFieldDecorator('lrsj', { initialValue: current.lrsj })(<Input type="hidden" />)}
         <Row>
           <Col {...this.colLayout}>
             <FormItem label="房屋名称" {...this.formLayout}>
@@ -89,7 +100,9 @@ class FmFyxx extends PureComponent {
               })(<Input placeholder="" />)}
             </FormItem>
           </Col>
-          <Divider orientation="left" dashed style={{fontSize: 8,color:'blue'}}>签约信息</Divider>          
+          <Divider orientation="left" dashed style={{ fontSize: 8, color: 'blue' }}>
+            签约信息
+          </Divider>
           <Col {...this.colLayout}>
             <FormItem label="租户姓名" {...this.formLayout}>
               {getFieldDecorator('zhxm', {
@@ -132,7 +145,14 @@ class FmFyxx extends PureComponent {
               {getFieldDecorator('htrqq', {
                 initialValue: current.htrqq ? moment(current.htrqq) : null,
                 rules: [{ required: qyzt, message: '请输入合同日期起' }],
-              })(<DatePicker onChange={this.onHtrqqChange} placeholder="请选择" format="YYYY-MM-DD" style={{ width: '100%' }} />)}
+              })(
+                <DatePicker
+                  onChange={this.onHtrqqChange}
+                  placeholder="请选择"
+                  format="YYYY-MM-DD"
+                  style={{ width: '100%' }}
+                />
+              )}
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
@@ -197,7 +217,23 @@ class FmFyxx extends PureComponent {
               })(<InputNumber min={0} step={1} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
-          <Divider orientation="left" dashed style={{fontSize: 12,color:'blue'}}>其它费用</Divider>          
+          <Col {...this.colLayout}>
+            <FormItem label="电本次读数" {...this.formLayout}>
+              {getFieldDecorator('dbcds', {
+                initialValue: current.dbcds,
+              })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col {...this.colLayout}>
+            <FormItem label="水本次读数" {...this.formLayout}>
+              {getFieldDecorator('sbcds', {
+                initialValue: current.sbcds,
+              })(<InputNumber min={0} step={10} placeholder="" style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Divider orientation="left" dashed style={{ fontSize: 12, color: 'blue' }}>
+            其它费用
+          </Divider>
           <Col {...this.colLayout}>
             <FormItem label="网络费" {...this.formLayout}>
               {getFieldDecorator('wlf', {
@@ -206,16 +242,16 @@ class FmFyxx extends PureComponent {
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
-            <FormItem label="管理费" {...this.formLayout}>
-              {getFieldDecorator('glf', {
-                initialValue: current.glf,
+            <FormItem label="卫生费" {...this.formLayout}>
+              {getFieldDecorator('ljf', {
+                initialValue: current.ljf,
               })(<InputNumber min={0} step={5} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
-            <FormItem label="卫生费" {...this.formLayout}>
-              {getFieldDecorator('ljf', {
-                initialValue: current.ljf,
+            <FormItem label="管理费" {...this.formLayout}>
+              {getFieldDecorator('glf', {
+                initialValue: current.glf,
               })(<InputNumber min={0} step={5} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>

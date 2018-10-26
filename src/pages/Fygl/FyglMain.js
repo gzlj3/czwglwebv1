@@ -187,11 +187,11 @@ class FyglMain extends PureComponent {
     });
   };
 
-  qrsz = (housefyid,flag) => {
+  qrsz = (housefyid, flag) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'fygl/qrsz',
-      payload: { housefyid,flag },
+      payload: { housefyid, flag },
     });
   };
 
@@ -332,7 +332,9 @@ class FyglMain extends PureComponent {
           tsinfo = (
             <div style={{ width: '100%', textAlign: 'center', fontSize: 16 }}>
               {zdfy}
-              <div style={{ fontSize: 18, padding: '8px' }}>{item.sfsz==='1'?'已结清':'已结转'}</div>
+              <div style={{ fontSize: 18, padding: '8px' }}>
+                {item.sfsz === '1' ? '已结清' : '已结转下月'}
+              </div>
             </div>
           );
         } else {

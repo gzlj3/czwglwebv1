@@ -1,5 +1,5 @@
 ﻿DROP TABLE  IF EXISTS `house`;
-CREATE TABLE `house`(
+CREATE TABLE `house` (
   `houseid` varchar(32) NOT NULL COMMENT '房屋ID',
   `yzhid` varchar(32) NOT NULL COMMENT '云租户ID',
   `fwmc` varchar(20) NOT NULL COMMENT '房屋名称',
@@ -24,11 +24,13 @@ CREATE TABLE `house`(
   `ljf` int(11) DEFAULT NULL COMMENT '垃圾费',
   `syjzf` decimal(10,2) DEFAULT NULL COMMENT '上月结转费',
   `qtf` decimal(10,2) DEFAULT NULL COMMENT '其它费',
-  `sfsz` varchar(1) DEFAULT '0' COMMENT '是否收租(0:未收，1:已收)',
   `bz` varchar(500) DEFAULT NULL COMMENT '备注',
   `rq1` date DEFAULT NULL COMMENT '收租日期起',
   `rq2` date DEFAULT NULL COMMENT '收租日期止',
   `fyhj` decimal(10,2) DEFAULT NULL COMMENT '费用合计',
+  `zdlx` varchar(1) DEFAULT '0' COMMENT '帐单类型(0:合同帐单,1:月结帐单,2:退房帐单)',
+  `sfsz` varchar(1) DEFAULT '0' COMMENT '是否收租(0:未收,1:已收,2:已结)',
+  `housefyid` varchar(32) DEFAULT NULL COMMENT '房屋费用表ID',
   `fy1` decimal(10,2) DEFAULT NULL COMMENT '备用费用1',
   `fy2` decimal(10,2) DEFAULT NULL COMMENT '备用费用2',
   `fy3` decimal(10,2) DEFAULT NULL COMMENT '备用费用3',
@@ -45,18 +47,20 @@ CREATE TABLE `house`(
   `zhxgsj` datetime DEFAULT NULL COMMENT '最后修改时间',
   PRIMARY KEY (`houseid`),
   UNIQUE KEY `ind_fwmc` (`yzhid`,`fwmc`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) COMMENT '房屋基本表'
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 DROP TABLE  IF EXISTS `housefy`;
-CREATE TABLE `housefy` (
+CREATE TABLE `housefy`(
   `housefyid` varchar(32) NOT NULL COMMENT '房屋费用表ID',
   `houseid` varchar(32) NOT NULL COMMENT '房屋ID',
-  `szrq` date DEFAULT NULL COMMENT '下次收租日期',
+  `szrq` date NOT NULL COMMENT '下次收租日期',
   `fwmc` varchar(20) NOT NULL COMMENT '房屋名称',
-  `zhxm` varchar(50) DEFAULT NULL COMMENT '租户姓名',
+  `zhxm` varchar(50) NOT NULL COMMENT '租户姓名',
   `rq1` date DEFAULT NULL COMMENT '收租日期起',
   `rq2` date DEFAULT NULL COMMENT '收租日期止',
   `czje` int(11) DEFAULT NULL COMMENT '房租费',
+  `yj` int(11) DEFAULT NULL COMMENT '押金',
   `dscds` int(11) DEFAULT NULL COMMENT '电上次读数',
   `dbcds` int(11) DEFAULT NULL COMMENT '电本次读数',
   `dsyds` int(11) DEFAULT NULL COMMENT '电实用读数',
@@ -75,7 +79,8 @@ CREATE TABLE `housefy` (
   `syjzf` decimal(10,2) DEFAULT NULL COMMENT '上月结转费',
   `qtf` decimal(10,2) DEFAULT NULL COMMENT '其它费',
   `fyhj` decimal(10,2) DEFAULT NULL COMMENT '费用合计',
-  `sfsz` varchar(1) DEFAULT '0' COMMENT '是否收租(0:未收,1:已收)',
+  `zdlx` varchar(1) DEFAULT '0' COMMENT '帐单类型(0:合同帐单,1:月结帐单,2:退房帐单)',
+  `sfsz` varchar(1) DEFAULT '0' COMMENT '是否收租(0:未收,1:已收,2:已结)',
   `bz` varchar(500) DEFAULT NULL COMMENT '备注',
   `fy1` decimal(10,2) DEFAULT NULL COMMENT '备用费用1',
   `fy2` decimal(10,2) DEFAULT NULL COMMENT '备用费用2',
@@ -87,10 +92,29 @@ CREATE TABLE `housefy` (
   `by3` varchar(50) DEFAULT NULL COMMENT '备用3',
   `by4` varchar(50) DEFAULT NULL COMMENT '备用4',
   `by5` varchar(50) DEFAULT NULL COMMENT '备用5',
+  `yzhid` varchar(32) NOT NULL COMMENT '云租户ID',
   `lrr` varchar(20) DEFAULT NULL COMMENT '录入人',
   `lrsj` datetime DEFAULT NULL COMMENT '录入时间',
   `zhxgr` varchar(20) DEFAULT NULL COMMENT '最后修改人',
   `zhxgsj` datetime DEFAULT NULL COMMENT '最后修改时间',
-  PRIMARY KEY (`housefyid`),
-  UNIQUE KEY `ind_houseid_szrq` (`houseid`,`szrq`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`housefyid`)
+--  UNIQUE KEY `ind_houseid_szrq` (`houseid`,`szrq`)
+)  COMMENT '房屋帐单表' 
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DROP TABLE  IF EXISTS `userb`;
+CREATE TABLE `userb`(
+  `userbid` varchar(32) NOT NULL COMMENT '用户表ID',
+  `userid` varchar(50) NOT NULL COMMENT '用户编号',
+  `username` varchar(50) NOT NULL COMMENT '用户名',
+  `dhhm` varchar(50) DEFAULT NULL COMMENT '电话号码',
+  `dwbh` varchar(50) DEFAULT NULL COMMENT '单位编号',  
+  `yzhid` varchar(32) NOT NULL COMMENT '云租户ID',
+  `lrr` varchar(20) DEFAULT NULL COMMENT '录入人',
+  `lrsj` datetime DEFAULT NULL COMMENT '录入时间',
+  `zhxgr` varchar(20) DEFAULT NULL COMMENT '最后修改人',
+  `zhxgsj` datetime DEFAULT NULL COMMENT '最后修改时间',
+  PRIMARY KEY (`userbid`),
+  UNIQUE KEY `ind_userid` (`userid`)
+)  COMMENT '用户表' 
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
