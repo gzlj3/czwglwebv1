@@ -83,6 +83,7 @@ class FmFyxx extends PureComponent {
     //   xxl: 8,
     // };
 
+    /* eslint-disable */
     const getActions = (item, i) =>
       item.sfsz === '0'
         ? [
@@ -124,6 +125,7 @@ class FmFyxx extends PureComponent {
             </a>,
           ]
         : null;
+    /* eslint-disable */
 
     const getExtra = item =>
       item.sfsz === '0' ? (
