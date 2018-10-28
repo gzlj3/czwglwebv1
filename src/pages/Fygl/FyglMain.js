@@ -242,6 +242,7 @@ class FyglMain extends PureComponent {
             <Menu.Item key="delete">删除</Menu.Item>
           </Menu>
         }
+        trigger={['click']}
       >
         <a>
           更多 <Icon type="down" />
@@ -402,7 +403,7 @@ class FyglMain extends PureComponent {
             <List
               size="large"
               rowKey="id"
-              grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 6 }}
+              grid={{ gutter: 10, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }}
               loading={loading}
               pagination={false}
               dataSource={fyList}

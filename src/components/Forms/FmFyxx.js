@@ -259,14 +259,14 @@ class FmFyxx extends PureComponent {
             <FormItem label="其它费" {...this.formLayout}>
               {getFieldDecorator('qtf', {
                 initialValue: current.qtf,
-              })(<InputNumber min={0} step={5} placeholder="" style={{ width: '100%' }} />)}
+              })(<InputNumber step={5} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
           <Col {...this.colLayout}>
             <FormItem label="上月结转费" {...this.formLayout}>
               {getFieldDecorator('syjzf', {
                 initialValue: current.syjzf,
-              })(<InputNumber min={0} step={5} placeholder="" style={{ width: '100%' }} />)}
+              })(<InputNumber step={5} placeholder="" style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
           <Col {...this.colLayout}>

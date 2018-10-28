@@ -9,3 +9,12 @@
   ]
 }
 
+-- update housefy a set houseid=(select houseid from house  b where a.fwmc=b.fwmc);
+-- update housefy set dsyds=dbcds-dscds,dfhj=(dbcds-dscds+dgtds)*ddj,ssyds=sbcds-sscds,sfhj=(sbcds-sscds+sgtds)*sdj,fyhj=dfhj+sfhj+wlf+ljf+qtf+czje,zdlx='1';
+-- update housefy set fyhj=dfhj+sfhj+wlf+ljf+qtf+czje,zdlx='1';
+
+update house a set dscds = (select dbcds from housefy b where a.fwmc=b.fwmc order by fwmc,rq1 desc limit 1);
+update house a set sscds = (select sbcds from housefy b where a.fwmc=b.fwmc order by fwmc,rq1 desc limit 1);
+update house a set fyhj = (select fyhj from housefy b where a.fwmc=b.fwmc order by fwmc,rq1 desc limit 1);
+update house a set sfsz = (select sfsz from housefy b where a.fwmc=b.fwmc order by fwmc,rq1 desc limit 1);
+ 
